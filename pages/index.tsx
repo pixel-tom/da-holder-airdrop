@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import HolderSnapshot from '/components/HolderSnapshot'
+import HolderSnapshot from '../components/HolderSnapshot'
 
 const Home: NextPage = () => {
   return (
