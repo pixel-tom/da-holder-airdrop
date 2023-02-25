@@ -1,43 +1,79 @@
 import React, { useState } from "react";
 import axios from "axios";
+import OwnersList from "./OwnersList";
+
+interface NftOwner {
+  wallet_address: string;
+}
+
+
 
 const HolderSnapshot = () => {
-    const [collectionAddress, setCollectionAddress] = useState<string>('');
-
-
-  const [owners, setOwners] = useState<any[]>([]);
-
+  const [collectionAddress, setCollectionAddress] = useState<string>("");
+  const [owners, setOwners] = useState<NftOwner[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const getNFTOwners = async (collectionAddress: String) => {
+  const getNFTOwners = async (collectionAddress: string) => {
+    const walletAddresses: NftOwner[] = [];
+  
+    const options = {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        'content-type': 'application/json',
+        authorization: 'Bearer 151c15b0-d21d-40b2-9786-49678176b715'
+      },
+      body: JSON.stringify({
+        helloMoonCollectionId: collectionAddress,
+        limit: 1000,
+        page: 1
+      })
+    };
+  
     let page = 1;
-    let wallet_addresses: any[] = [];
-    const max_pages = 100;
-
-    while (page <= max_pages) {
-      const headers = {
-        accept: "application/json",
-        token:
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkQXQiOjE2NzYyNzMzMDQyNzUsImVtYWlsIjoiYm5vcjI3MTBAZ21haWwuY29tIiwiYWN0aW9uIjoidG9rZW4tYXBpIiwiaWF0IjoxNjc2MjczMzA0fQ.4-8Sk87IiKHmVzwGIMkTiRm2vAHjAWODYGyCoGhoYg4",
-      };
-      const url = `https://pro-api.solscan.io/v1.0/nft/collection/holders/${collectionAddress}?page=${page}`;
-      const response = await axios.get(url, { headers });
-      const responseData = response.data;
-
-      if (responseData.data.holders.length === 0) {
-        break;
+    let hasMoreData = true;
+  
+    while (hasMoreData) {
+      const response = await fetch('https://rest-api.hellomoon.io/v0/nft/collection/mints', options);
+  
+      if (!response.ok) {
+        throw new Error(`Error retrieving NFT owners: ${response.status}`);
       }
-
-      wallet_addresses = wallet_addresses.concat(responseData.data.holders);
-      page++;
-
-      // Add a delay of 0.15 seconds between requests
-      await new Promise((resolve) => setTimeout(resolve, 500));
+  
+      const responseData = await response.json();
+      const data = responseData.data;
+  
+      if (data.length === 0) {
+        hasMoreData = false;
+      } else {
+        const pageWalletAddresses: NftOwner[] = data.map((mint: any) => {
+          return {
+            wallet_address: mint.nftMint
+          };
+        });
+        walletAddresses.push(...pageWalletAddresses);
+        page++;
+  
+        // Update the page number in the request body
+        options.body = JSON.stringify({
+          helloMoonCollectionId: collectionAddress,
+          limit: 1000,
+          page: page
+        });
+  
+        // Add a delay of one second between requests
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
     }
-
-    return wallet_addresses;
+  
+    return walletAddresses;
   };
+  
+  
+  
+  
+  
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
@@ -61,7 +97,7 @@ const HolderSnapshot = () => {
     <div>
       <div className="container mx-auto p-4">
         <h1 className="text-2xl font-bold mb-4">
-          Get all current owners of an NFT collection
+          Get the Mint List for an NFT Collection
         </h1>
         <form onSubmit={handleSubmit} className="flex flex-col">
           <label htmlFor="collectionAddress" className="mb-2 font-medium">
@@ -84,17 +120,12 @@ const HolderSnapshot = () => {
           </button>
         </form>
         {owners.length > 0 && (
-          <div className="mt-4 max-h-[400px] overflow-y-scroll">
-            <h2 className="text-lg font-medium mb-2">
-              {owners.length} owners found:
-            </h2>
-            <ul>
-              {owners.map((owner, i) => (
-                <li key={i}>{owner.wallet_address}</li>
-              ))}
-            </ul>
+          <div className="mt-4 max-h-[200px] overflow-y-scroll">
+            
+            <OwnersList owners={owners} />
           </div>
         )}
+
         {loading && (
           <div className="flex justify-center items-center h-32">
             <p className="text-blue-500 font-bold">Generating Snapshot...</p>
