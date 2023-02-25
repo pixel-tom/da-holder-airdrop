@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 const HolderSnapshot = () => {
-    const [collectionAddress, setCollectionAddress] = useState<string>('');
-
+  const [collectionAddress, setCollectionAddress] = useState<string>("");
 
   const [owners, setOwners] = useState<any[]>([]);
 
