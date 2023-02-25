@@ -1,16 +1,12 @@
 import React, { useState } from "react";
 import axios from "axios";
-import OwnersList from "./OwnersList";
-
-interface NftOwner {
-  wallet_address: string;
-}
-
-
 
 const HolderSnapshot = () => {
-  const [collectionAddress, setCollectionAddress] = useState<string>("");
-  const [owners, setOwners] = useState<NftOwner[]>([]);
+    const [collectionAddress, setCollectionAddress] = useState<string>('');
+
+
+  const [owners, setOwners] = useState<any[]>([]);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
