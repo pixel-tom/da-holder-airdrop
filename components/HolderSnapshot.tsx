@@ -1,5 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
+import OwnersList from './OwnersList';
+
+interface NftOwner {
+  wallet_address: string;
+}
+
 
 const HolderSnapshot = () => {
     const [collectionAddress, setCollectionAddress] = useState<string>('');
