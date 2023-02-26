@@ -1,16 +1,22 @@
 import React, { useState } from "react";
 import CollectionNames from "../components/CollectionNames";
+import OwnerList from "./OwnerList";
 
-interface NftOwner {
+export type NftOwner = {
   wallet_address: string;
   owner_account: string;
-}
+};
 
-const HolderList = () => {
+
+
+
+const HoldersList = () => {
   const [collectionAddress, setCollectionAddress] = useState<string>("");
   const [owners, setOwners] = useState<NftOwner[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [ownersList, setOwnersList] = useState<NftOwner[]>([]);
+
   const getNFTHolders = async (collectionAddress: string) => {
     const walletAddresses: NftOwner[] = [];
 
@@ -81,6 +87,7 @@ const HolderList = () => {
       const addresses = await getNFTHolders(collectionAddress);
 
       setOwners(addresses);
+      setOwnersList(addresses);
     } catch (error) {
       setError("Error retrieving NFT owners");
       console.error(error);
@@ -91,6 +98,7 @@ const HolderList = () => {
 
   const uniqueHolders = new Set(owners.map((owner) => owner.owner_account));
   const totalHolders = uniqueHolders.size;
+  const ownerAddresses = owners.map((owner: NftOwner) => owner.owner_account);
 
   return (
     <div className="bg-gray-200  w-max">
@@ -166,13 +174,11 @@ const HolderList = () => {
                 className="px-4 py-2 overflow-y-scroll"
                 style={{ maxHeight: "400px" }}
               >
-                <ul>
-                  {owners.map((owner: NftOwner, index: number) => (
-                    <li key={`owner-${index}`} className="text-gray-700 mb-1">
-                      {owner.owner_account}
-                    </li>
-                  ))}
-                </ul>
+                {ownersList.length > 0 ? (
+                  <OwnerList owners={ownersList} />
+                ) : (
+                  <p>No owner addresses found</p>
+                )}
               </div>
             </div>
           </div>
@@ -180,6 +186,7 @@ const HolderList = () => {
       </div>
     </div>
   );
+
 };
 
-export default HolderList;
+export default HoldersList;

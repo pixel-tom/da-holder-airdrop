@@ -4,6 +4,7 @@ import Head from "next/head";
 import HoldersList from "../components/getOwnerSnapshot";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
+
 const Home: NextPage = () => {
   return (
     <div className="flex flex-col min-h-screen">
