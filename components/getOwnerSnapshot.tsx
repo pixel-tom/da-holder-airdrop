@@ -93,10 +93,10 @@ const HolderList = () => {
   const totalHolders = uniqueHolders.size;
 
   return (
-    <div className="bg-gray-200 w-full">
-      <div className="mx-auto px-4 py-8">
-        <div className="flex flex-wrap">
-          <div className="w-full md:w-2/5">
+    <div className="bg-gray-200  w-max">
+      <div className="mx-auto px-4 py-8  w-max">
+        <div className="flex flex-row">
+          <div className="w-full flex md:w-2/5 mr-24">
             <CollectionNames />
           </div>
           <div className="w-full md:w-3/5">

@@ -69,67 +69,87 @@ const CollectionNames = () => {
   };
 
   return (
-    <div className="">
+    <div className="mr-12">
       <div className="container w-full">
-        <form className="flex flex-col max-w-sm mx-auto">
-          <label htmlFor="collectionName" className="text-gray-700 font-medium mb-2">
+        <form className="flex flex-col mx-auto">
+          <label
+            htmlFor="collectionName"
+            className="text-gray-700 font-medium mb-2"
+          >
             Collection Name
           </label>
-          <div className="relative">
+          <div className="flex">
             <input
               id="collectionName"
               type="text"
               value={collectionName}
               onChange={(e) => setCollectionName(e.target.value)}
-              className="py-2 pl-4 pr-10 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="flex-1 py-2 pl-4 pr-10 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="Search for a collection..."
             />
             <button
               type="button"
               onClick={handleSearchClick}
-              className="absolute top-0 right-0 px-4 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="ml-2 px-4 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex-shrink-0"
+              disabled={loading} // disable the button while loading
             >
-              Search
+              {loading ? (
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 2.761 1.122 5.26 2.94 7.069l3.071-3.778z"
+                  ></path>
+                </svg>
+              ) : (
+                'Search'
+              )}
             </button>
           </div>
-          {collections.length > 0 && (
-            <div className="mt-4">
-              
-              <div className="relative">
-                <select
-                  id="collections"
-                  className="py-2 pl-4 pr-10 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  {collections.map((collection) => (
-                    <option
-                      key={collection.id}
-                      value={collection.id}
-                      data-collection-id={collection.id}
-                    >
-                      {collection.name}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  type="button"
-                  onClick={handleCopyClick}
-                  className="absolute top-0 right-0 px-4 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                >
-                  Copy ID
-                </button>
-              </div>
+          <div className="mt-4">
+            <div className="flex">
+              <select
+                id="collections"
+                className="flex-1 py-2 pl-4 pr-10 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                {collections.map((collection) => (
+                  <option
+                    key={collection.id}
+                    value={collection.id}
+                    data-collection-id={collection.id}
+                  >
+                    {collection.name}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={handleCopyClick}
+                className="ml-2 px-4 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex-shrink-0"
+              >
+                Copy ID
+              </button>
             </div>
-          )}
+          </div>
           {error && <div className="text-red-500 mt-2">{error}</div>}
-          {loading && (
-            <div className="flex justify-center items-center h-32">
-              <p className="text-blue-500 font-bold">Loading...</p>
-            </div>
-          )}
         </form>
       </div>
     </div>
   );
+  
   
 };
 

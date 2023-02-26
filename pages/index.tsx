@@ -23,7 +23,7 @@ const Home: NextPage = () => {
         <div className="flex items-center justify-center w-max max-w-7xl mx-auto mb-12">
         </div>
         <div className="flex items-center justify-center mx-auto mb-16">
-          <div className="bg-gray-200 rounded-lg shadow-lg px-6 mx-auto py-4">
+          <div className="bg-gray-200 rounded-lg shadow-lg px-6 py-4">
             <HoldersList />
           </div>
         </div>
