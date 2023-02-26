@@ -1,4 +1,14 @@
 import React, { useState } from "react";
+import OwnerList, { OwnerListProps } from "./OwnerList";
+import { NftOwner } from "./getOwnerSnapshot";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import {
+  Connection,
+  PublicKey,
+  Transaction,
+  TransactionInstruction,
+  SystemProgram,
+} from "@solana/web3.js";
 
 const AirdropTokens = () => {
   const [token, setToken] = useState("");
@@ -7,9 +17,64 @@ const AirdropTokens = () => {
 
   const [owners, setOwners] = useState<string[]>([]);
 
-  const sendTokens = async () => {
-    // TODO: Implement sending tokens to all owners
-  };
+  async function airdropNFTs(
+    mintAddress: string,
+    recipientAddresses: string[],
+    amount: number
+  ) {
+    // Establish connection to Solana network
+    const connection = new Connection("https://api.devnet.solana.com");
+
+    // Convert mint address to public key
+    const mintPublicKey = new PublicKey(mintAddress);
+
+    // Retrieve the decimals of the mint
+    const mintInfo = await connection.getParsedAccountInfo(mintPublicKey);
+
+    // i have to look into this
+    const decimals = mintInfo.value!.data.parsed.info.decimals;
+
+    // Converts recipient addresses to public keys
+    const recipientPublicKeys = recipientAddresses.map(
+      (address) => new PublicKey(address)
+    );
+
+    // Builds instruction to transfer NFTs to recipients
+    const instruction = new TransactionInstruction({
+      keys: [
+        { pubkey: mintPublicKey, isSigner: false, isWritable: true },
+        ...recipientPublicKeys.map((pubkey) => ({
+          pubkey,
+          isSigner: false,
+          isWritable: true,
+        })),
+      ],
+      programId: new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
+      data: Buffer.from(
+        Uint8Array.of(
+          6,
+          ...new Array(decimals).fill(0),
+          ...new Array(8).fill(0),
+          ...new Array(8).fill(amount)
+        )
+      ),
+    });
+
+    // Build and signs transaction
+    const transaction = new Transaction().add(instruction);
+
+    // have to change fee payer address below to whichever address is paying the fees,
+    // normally its the signer/sender
+
+    transaction.feePayer = new PublicKey("YOUR_FEE_PAYER_ADDRESS");
+    const signature = await connection.sendTransaction(transaction, []);
+    console.log(`Transaction ${signature} submitted.`);
+  }
+  // just have to replace mintAddress with the address of the NFT mint you want to airdrop,
+  // recipientAddresses with an array of recieving addresses, and amount with the number
+  // of NFTs to airdrop to each recipient.
+
+  const sendTokens = async () => {};
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();

@@ -3,7 +3,7 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import HoldersList from "../components/getOwnerSnapshot";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-
+import AirdropTokens from "../components/AirdropTokens";
 
 const Home: NextPage = () => {
   return (
@@ -21,11 +21,11 @@ const Home: NextPage = () => {
         </div>
       </nav>
       <main className="flex flex-1 flex-col items-center justify-center h-screen w-full mx-auto py-8">
-        <div className="flex items-center justify-center w-max max-w-7xl mx-auto mb-12">
-        </div>
+        <div className="flex items-center justify-center w-max max-w-7xl mx-auto mb-12"></div>
         <div className="flex items-center justify-center mx-auto mb-16">
           <div className="bg-gray-200 rounded-lg shadow-lg px-6 py-4">
             <HoldersList />
+            <AirdropTokens />
           </div>
         </div>
       </main>
