@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import OwnersList from "./MintList";
 
 const AirdropTokens = () => {
   const [token, setToken] = useState("");

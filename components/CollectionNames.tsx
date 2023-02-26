@@ -11,6 +11,8 @@ const CollectionNames = () => {
   const [error, setError] = useState("");
   const [collectionName, setCollectionName] = useState("");
 
+  let typingTimer: NodeJS.Timeout;
+
   const getCollections = async () => {
     setLoading(true);
     setError("");
@@ -61,64 +63,74 @@ const CollectionNames = () => {
     }
   };
 
-  const handleSubmit = async (e: { preventDefault: () => void }) => {
+  const handleSearchClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     getCollections();
   };
-  return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Select a Collection</h1>
-      <form onSubmit={handleSubmit} className="flex flex-col">
-        <label htmlFor="collectionName" className="mb-2 font-medium">
-          Collection name
-        </label>
-        <div className="flex space-x-4">
-          <input
-            id="collectionName"
-            type="text"
-            value={collectionName}
-            onChange={(e) => setCollectionName(e.target.value)}
-            className="p-2 border border-gray-300 rounded-lg w-60"
-          />
-          <button
-            type="submit"
-            className="p-2 bg-blue-500 text-white rounded-lg"
-            disabled={loading}
-          >
-            {loading ? "Loading..." : "Get collections"}
-          </button>
-        </div>
-      </form>
-      {error && <div className="text-red-500 mb-2">{error}</div>}
-      {collections.length > 0 && (
-        <div className="mt-4 flex space-x-4">
-          <select className="w-60">
-            {collections.map((collection) => (
-              <option
-                key={collection.id}
-                value={collection.id}
-                data-collection-id={collection.id}
-              >
-                {collection.name}
-              </option>
-            ))}
-          </select>
-          <button
-            onClick={handleCopyClick}
-            className="p-2 bg-blue-500 text-white rounded-lg w-48"
-          >
-            Copy Collection ID
-          </button>
-        </div>
-      )}
 
-      {loading && (
-        <div className="flex justify-center items-center h-32">
-          <p className="text-blue-500 font-bold">Loading...</p>
-        </div>
-      )}
+  return (
+    <div className="">
+      <div className="container w-full">
+        <form className="flex flex-col max-w-sm mx-auto">
+          <label htmlFor="collectionName" className="text-gray-700 font-medium mb-2">
+            Collection Name
+          </label>
+          <div className="relative">
+            <input
+              id="collectionName"
+              type="text"
+              value={collectionName}
+              onChange={(e) => setCollectionName(e.target.value)}
+              className="py-2 pl-4 pr-10 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Search for a collection..."
+            />
+            <button
+              type="button"
+              onClick={handleSearchClick}
+              className="absolute top-0 right-0 px-4 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              Search
+            </button>
+          </div>
+          {collections.length > 0 && (
+            <div className="mt-4">
+              
+              <div className="relative">
+                <select
+                  id="collections"
+                  className="py-2 pl-4 pr-10 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  {collections.map((collection) => (
+                    <option
+                      key={collection.id}
+                      value={collection.id}
+                      data-collection-id={collection.id}
+                    >
+                      {collection.name}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={handleCopyClick}
+                  className="absolute top-0 right-0 px-4 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                  Copy ID
+                </button>
+              </div>
+            </div>
+          )}
+          {error && <div className="text-red-500 mt-2">{error}</div>}
+          {loading && (
+            <div className="flex justify-center items-center h-32">
+              <p className="text-blue-500 font-bold">Loading...</p>
+            </div>
+          )}
+        </form>
+      </div>
     </div>
   );
+  
 };
 
 export default CollectionNames;

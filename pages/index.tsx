@@ -1,25 +1,10 @@
 /* eslint-disable react/no-unescaped-entities */
 import type { NextPage } from "next";
 import Head from "next/head";
-
-import CollectionNames from "../components/CollectionNames";
 import HoldersList from "../components/getOwnerSnapshot";
-import OwnersList from "../components/MintList";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import { useState } from "react";
-
-interface OwnersListProps {
-  owners: NftOwner[];
-}
-
-interface NftOwner {
-  wallet_address: string;
-}
 
 const Home: NextPage = () => {
-  
-
-
   return (
     <div className="flex flex-col min-h-screen">
       <Head>
@@ -34,26 +19,17 @@ const Home: NextPage = () => {
           <WalletMultiButton />
         </div>
       </nav>
-      <main className="flex flex-1 flex-col items-center justify-center px-4 py-8">
-        <h1 className="text-4xl font-bold mb-4">Holder Airdrop</h1>
-        <p className="text-lg mb-8">
-          Use Solscan to find the owner's wallets of a given NFT collection.
-          Solscan collection address can be found in the URL of the collection
-          page on the official SolScan website.
-        </p>
-        <div className="flex flex-col items-center justify-center w-full max-w-md mx-auto">
+      <main className="flex flex-1 flex-col items-center justify-center h-screen w-full mx-auto py-8">
+        <div className="flex items-center justify-center w-max max-w-7xl mx-auto mb-12">
         </div>
-        <div className="flex flex-col items-center justify-center w-full max-w-md mx-auto">
-          <CollectionNames />
-          <div className="my-8" />
-
-          <HoldersList />
+        <div className="flex items-center justify-center mx-auto mb-16">
+          <div className="bg-gray-200 rounded-lg shadow-lg px-6 mx-auto py-4">
+            <HoldersList />
+          </div>
         </div>
-        
-        
       </main>
-      <footer className="p-4">
-        <p className="text-center">
+      <footer className="p-4 bg-gray-800">
+        <p className="text-center text-white">
           Powered by{" "}
           <a
             href="https://thedogecademy.com/"
@@ -67,7 +43,6 @@ const Home: NextPage = () => {
       </footer>
     </div>
   );
-  
 };
 
 export default Home;

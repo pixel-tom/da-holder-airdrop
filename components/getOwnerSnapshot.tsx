@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import OwnersList from "./MintList";
+import CollectionNames from "../components/CollectionNames";
 
 interface NftOwner {
   wallet_address: string;
@@ -8,12 +8,9 @@ interface NftOwner {
 
 const HolderList = () => {
   const [collectionAddress, setCollectionAddress] = useState<string>("");
-
   const [owners, setOwners] = useState<NftOwner[]>([]);
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
   const getNFTHolders = async (collectionAddress: string) => {
     const walletAddresses: NftOwner[] = [];
 
@@ -92,63 +89,97 @@ const HolderList = () => {
     setLoading(false);
   };
 
+  const uniqueHolders = new Set(owners.map((owner) => owner.owner_account));
+  const totalHolders = uniqueHolders.size;
+
   return (
-    <div>
-      <div className="container mx-auto p-4">
-        <h1 className="text-2xl font-bold mb-4">
-          Get the Holder Wallet Addresses for an NFT Collection
-        </h1>
-        <form onSubmit={handleSubmit} className="flex flex-col">
-          <label htmlFor="collectionAddress" className="mb-2 font-medium">
-            Collection address
-          </label>
-          <input
-            id="collectionAddress"
-            type="text"
-            value={collectionAddress}
-            onChange={(e) => setCollectionAddress(e.target.value)}
-            className="p-2 mb-4 border border-gray-300 rounded-lg"
-          />
-          {error && <div className="text-red-500 mb-2">{error}</div>}
-          <button
-            type="submit"
-            className="p-2 bg-blue-500 text-white rounded-lg"
-            disabled={loading}
-          >
-            {loading ? "Loading..." : "Get Wallet Addresses"}
-          </button>
-        </form>
-        {owners.length > 0 && (
-          <div className="flex mt-4">
-            <div className="w-1/2 h-64 overflow-y-scroll mr-4">
-              <h2 className="text-lg font-bold mb-2">Collection Mint List</h2>
-              <ul className="list-disc pl-4">
-                {owners.map((owner: NftOwner, index: number) => (
-                  <li key={`wallet-${index}`}>{owner.wallet_address}</li>
-                ))}
-              </ul>
-            </div>
-            <div className="w-1/2 h-64 overflow-y-scroll">
-              <h2 className="text-lg font-bold mb-2">Holder Wallets</h2>
-              <ul className="list-disc pl-4">
-                {owners.map((owner: NftOwner, index: number) => (
-                  <li key={`owner-${index}`}>{owner.owner_account}</li>
-                ))}
-              </ul>
-            </div>
+    <div className="bg-gray-200 w-full">
+      <div className="mx-auto px-4 py-8">
+        <div className="flex flex-wrap">
+          <div className="w-full md:w-2/5">
+            <CollectionNames />
+          </div>
+          <div className="w-full md:w-3/5">
+            <form onSubmit={handleSubmit} className="">
+              <div className="mb-4">
+                <label
+                  htmlFor="collectionAddress"
+                  className="block text-gray-700 font-medium mb-2"
+                >
+                  Collection ID
+                </label>
+                <input
+                  id="collectionAddress"
+                  type="text"
+                  value={collectionAddress}
+                  onChange={(e) => setCollectionAddress(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:border-blue-500"
+                  placeholder="Enter collection ID"
+                  required
+                />
+                {error && <p className="text-red-500 mt-2">{error}</p>}
+              </div>
+              <button
+                type="submit"
+                className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 focus:outline-none focus:bg-blue-600 disabled:opacity-50"
+                disabled={loading}
+              >
+                {loading ? "Loading..." : "Generate Mint and Holder Snapshot"}
+              </button>
+            </form>
+          </div>
+        </div>
+        {loading && (
+          <div className="flex justify-center items-center h-32 mt-8">
+            <p className="text-blue-500 font-bold">Generating Snapshot...</p>
           </div>
         )}
-  
-        {loading && (
-          <div className="flex justify-center items-center h-32">
-            <p className="text-blue-500 font-bold">Generating Snapshot...</p>
+        {owners.length > 0 && (
+          <div className="flex flex-nowrap mt-8 gap-5">
+            <div className="w-full md:w-1/2 bg-white rounded-lg shadow">
+              <h2 className="text-lg font-bold px-4 py-2 border-b border-gray-300">
+                Collection Mint List
+              </h2>
+              <div
+                className="px-4 py-2 overflow-y-scroll"
+                style={{ maxHeight: "400px" }}
+              >
+                <ul>
+                  {owners.map((owner: NftOwner, index: number) => (
+                    <li key={`wallet-${index}`} className="text-gray-700 mb-1">
+                      {owner.wallet_address}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <div className="w-full md:w-1/2 bg-white rounded-lg shadow">
+              <div className="flex">
+                <h2 className="text-lg font-bold px-4 py-2 border-b border-gray-300">
+                  Holder Wallets
+                </h2>
+                <h2 className="text-lg ml-auto mr-2 text-blue-400 my-auto text-right font-bold px-1">
+                  Total Holders: {totalHolders}
+                </h2>
+              </div>
+              <div
+                className="px-4 py-2 overflow-y-scroll"
+                style={{ maxHeight: "400px" }}
+              >
+                <ul>
+                  {owners.map((owner: NftOwner, index: number) => (
+                    <li key={`owner-${index}`} className="text-gray-700 mb-1">
+                      {owner.owner_account}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
         )}
       </div>
     </div>
   );
-  
-  
 };
 
 export default HolderList;
