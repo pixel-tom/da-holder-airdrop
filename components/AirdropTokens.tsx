@@ -25,6 +25,10 @@ const AirdropTokens = () => {
     // Establish connection to Solana network
     const connection = new Connection("https://api.devnet.solana.com");
 
+    // Wallet that is airdropping & paying fees
+    const { publicKey } = useWallet();
+    const YOUR_FEE_PAYER_ADDRESS = publicKey?.toString;
+
     // Convert mint address to public key
     const mintPublicKey = new PublicKey(mintAddress);
 
@@ -66,7 +70,7 @@ const AirdropTokens = () => {
     // have to change fee payer address below to whichever address is paying the fees,
     // normally its the signer/sender
 
-    transaction.feePayer = new PublicKey("YOUR_FEE_PAYER_ADDRESS");
+    transaction.feePayer = new PublicKey({ YOUR_FEE_PAYER_ADDRESS });
     const signature = await connection.sendTransaction(transaction, []);
     console.log(`Transaction ${signature} submitted.`);
   }
