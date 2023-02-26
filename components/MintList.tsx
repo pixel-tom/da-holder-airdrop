@@ -8,7 +8,7 @@ interface NftOwner {
   wallet_address: string;
 }
 
-const OwnersList: React.FC<OwnersListProps> = ({ owners }) => {
+const MintList: React.FC<OwnersListProps> = ({ owners }) => {
   return (
     <div>
       <h2 className="text-lg font-medium mb-2">{owners.length} Mint Addresses:</h2>
@@ -24,4 +24,4 @@ const OwnersList: React.FC<OwnersListProps> = ({ owners }) => {
 };
 
 
-export default OwnersList;
+export default MintList;

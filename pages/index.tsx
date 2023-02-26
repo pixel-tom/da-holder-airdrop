@@ -1,11 +1,25 @@
 /* eslint-disable react/no-unescaped-entities */
 import type { NextPage } from "next";
 import Head from "next/head";
-import HolderSnapshot from "../components/HolderSnapshot";
+
 import CollectionNames from "../components/CollectionNames";
+import HoldersList from "../components/getOwnerSnapshot";
+import OwnersList from "../components/MintList";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { useState } from "react";
+
+interface OwnersListProps {
+  owners: NftOwner[];
+}
+
+interface NftOwner {
+  wallet_address: string;
+}
 
 const Home: NextPage = () => {
+  
+
+
   return (
     <div className="flex flex-col min-h-screen">
       <Head>
@@ -28,10 +42,15 @@ const Home: NextPage = () => {
           page on the official SolScan website.
         </p>
         <div className="flex flex-col items-center justify-center w-full max-w-md mx-auto">
+        </div>
+        <div className="flex flex-col items-center justify-center w-full max-w-md mx-auto">
           <CollectionNames />
           <div className="my-8" />
-          <HolderSnapshot />
+
+          <HoldersList />
         </div>
+        
+        
       </main>
       <footer className="p-4">
         <p className="text-center">
