@@ -5,6 +5,7 @@ import HoldersList from "../components/getOwnerSnapshot";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import AirdropTokens from "../components/AirdropTokens";
 import { useState } from "react";
+import Link from "next/link";
 
 interface Props {
   setOwnerAccounts: React.Dispatch<React.SetStateAction<string[]>>;
@@ -28,6 +29,9 @@ const Home: React.FC<Props> = ({ setOwnerAccounts }) => {
         <div>
           <h1 className="text-white font-bold text-xl">da-holder-airdrop</h1>
         </div>
+        <h1 className="text-white">
+          <Link href="/tokens">Tokens</Link>
+        </h1>
         <div>
           <WalletMultiButton />
         </div>
