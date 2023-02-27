@@ -35,7 +35,8 @@ const AirdropTokens = ({ recipientAddresses }: { recipientAddresses: string[] })
     const mintInfo = await connection.getParsedAccountInfo(mintPublicKey);
 
     // i have to look into this
-    const decimals = mintInfo.value!.data.parsed.info.decimals;
+    const decimals = mintInfo.value!.data instanceof Buffer ? undefined : mintInfo.value!.data.parsed.info.decimals;
+
 
     // Converts recipient addresses to public keys
     const recipientPublicKeys = recipientAddresses.map(
@@ -85,7 +86,8 @@ const AirdropTokens = ({ recipientAddresses }: { recipientAddresses: string[] })
         await airdropNFTs(token, [recipientAddress], 1); // airdrop the token to each recipient
       }
     } catch (error) {
-      setError(`Error sending tokens: ${error?.message}`);
+      setError(`Error sending tokens: ${(error as Error)?.message}`);
+
       console.error(error);
     }
     setLoading(false);
