@@ -1,24 +1,25 @@
 import React, { useState } from "react";
 import CollectionNames from "../components/CollectionNames";
-import OwnerList from "./OwnerList";
+import AirdropTokens from "./AirdropTokens";
 
-export type NftOwner = {
-  wallet_address: string;
-  owner_account: string;
-};
-
-
-
-
-const HoldersList = () => {
+const HoldersList = ({
+  setOwnerAccounts,
+  updateRecipientAddresses,
+}: {
+  setOwnerAccounts: React.Dispatch<React.SetStateAction<string[]>>;
+  updateRecipientAddresses: (addresses: string[]) => void;
+}) => {
   const [collectionAddress, setCollectionAddress] = useState<string>("");
-  const [owners, setOwners] = useState<NftOwner[]>([]);
+  const [owners, setOwners] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [ownersList, setOwnersList] = useState<NftOwner[]>([]);
+  const [ownersList, setOwnersList] = useState<string[]>([]);
+  const [addresses, setAddresses] = useState<string[]>([]);
+  const [isUpdated, setIsUpdated] = useState(false);
 
+  // Function to send request to HelloMoon API to get Mint List and Owner List from collection id input
   const getNFTHolders = async (collectionAddress: string) => {
-    const walletAddresses: NftOwner[] = [];
+    const ownerAccounts: string[] = [];
 
     const options = {
       method: "POST",
@@ -53,13 +54,10 @@ const HoldersList = () => {
       if (data.length === 0) {
         hasMoreData = false;
       } else {
-        const pageWalletAddresses: NftOwner[] = data.map((mint: any) => {
-          return {
-            wallet_address: mint.nftMint,
-            owner_account: mint.ownerAccount,
-          };
-        });
-        walletAddresses.push(...pageWalletAddresses);
+        const pageOwnerAccounts: string[] = data.map(
+          (mint: any) => mint.ownerAccount
+        );
+        ownerAccounts.push(...pageOwnerAccounts);
         page++;
 
         // Update the page number in the request body
@@ -74,7 +72,7 @@ const HoldersList = () => {
       }
     }
 
-    return walletAddresses;
+    return ownerAccounts;
   };
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
@@ -85,9 +83,9 @@ const HoldersList = () => {
 
     try {
       const addresses = await getNFTHolders(collectionAddress);
-
       setOwners(addresses);
       setOwnersList(addresses);
+      setAddresses(addresses); // update the addresses state
     } catch (error) {
       setError("Error retrieving NFT owners");
       console.error(error);
@@ -96,13 +94,21 @@ const HoldersList = () => {
     setLoading(false);
   };
 
-  const uniqueHolders = new Set(owners.map((owner) => owner.owner_account));
+  const handleUpdateAddresses = () => {
+    updateRecipientAddresses(ownersList);
+    setAddresses(ownersList);
+  };
+
+  const handleClearAddresses = () => {
+    updateRecipientAddresses([]);
+  };
+
+  const uniqueHolders = new Set(owners);
   const totalHolders = uniqueHolders.size;
-  const ownerAddresses = owners.map((owner: NftOwner) => owner.owner_account);
 
   return (
-    <div className="bg-gray-200  w-max">
-      <div className="mx-auto px-4 py-8  w-max">
+    <div className="bg-gray-200 w-max">
+      <div className="mx-auto px-4 py-8 w-max">
         <div className="flex flex-row">
           <div className="w-full flex md:w-2/5 mr-24">
             <CollectionNames />
@@ -132,7 +138,7 @@ const HoldersList = () => {
                 className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 focus:outline-none focus:bg-blue-600 disabled:opacity-50"
                 disabled={loading}
               >
-                {loading ? "Loading..." : "Generate Mint and Holder Snapshot"}
+                {loading ? "Loading..." : "Generate Holder Snapshot"}
               </button>
             </form>
           </div>
@@ -144,41 +150,40 @@ const HoldersList = () => {
         )}
         {owners.length > 0 && (
           <div className="flex flex-nowrap mt-8 gap-5">
-            <div className="w-full md:w-1/2 bg-white rounded-lg shadow">
-              <h2 className="text-lg font-bold px-4 py-2 border-b border-gray-300">
-                Collection Mint List
-              </h2>
-              <div
-                className="px-4 py-2 overflow-y-scroll"
-                style={{ maxHeight: "400px" }}
-              >
-                <ul>
-                  {owners.map((owner: NftOwner, index: number) => (
-                    <li key={`wallet-${index}`} className="text-gray-700 mb-1">
-                      {owner.wallet_address}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-            <div className="w-full md:w-1/2 bg-white rounded-lg shadow">
+            <div className="w-full bg-white rounded-lg shadow">
               <div className="flex">
                 <h2 className="text-lg font-bold px-4 py-2 border-b border-gray-300">
                   Holder Wallets
                 </h2>
                 <h2 className="text-lg ml-auto mr-2 text-blue-400 my-auto text-right font-bold px-1">
-                  Total Holders: {totalHolders}
+                  Unique Holders: {totalHolders}
                 </h2>
               </div>
-              <div
-                className="px-4 py-2 overflow-y-scroll"
-                style={{ maxHeight: "400px" }}
+
+              <div className="overflow-y-auto max-w-4xl mx-auto max-h-96">
+                {owners.map((owner, index) => (
+                  <div
+                    key={index}
+                    className="w-full md:w-1/2 lg:w-1/3 py-2 px-4 text-gray-700"
+                  >
+                    {owner}
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-end mt-4">
+              
+              <button
+                className="bg-blue-500 w-1/2 text-white py-2 px-4 rounded-lg font-medium"
+                onClick={handleUpdateAddresses}
               >
-                {ownersList.length > 0 ? (
-                  <OwnerList owners={ownersList} />
-                ) : (
-                  <p>No owner addresses found</p>
-                )}
+                Update Addresses
+              </button>
+              <button
+                onClick={handleClearAddresses}
+                className="bg-red-500 w-1/2 text-white px-4 py-2 rounded-lg"
+              >
+                Clear Addresses
+              </button>
               </div>
             </div>
           </div>
@@ -186,7 +191,6 @@ const HoldersList = () => {
       </div>
     </div>
   );
-
 };
 
 export default HoldersList;

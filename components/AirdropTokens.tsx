@@ -1,6 +1,5 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState } from "react";
-import OwnerList, { OwnerListProps } from "./OwnerList";
-import { NftOwner } from "./getOwnerSnapshot";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import {
   Connection,
@@ -10,7 +9,7 @@ import {
   SystemProgram,
 } from "@solana/web3.js";
 
-const AirdropTokens = () => {
+const AirdropTokens = ({ recipientAddresses }: { recipientAddresses: string[] }) => {
   const [token, setToken] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -78,35 +77,55 @@ const AirdropTokens = () => {
   // recipientAddresses with an array of recieving addresses, and amount with the number
   // of NFTs to airdrop to each recipient.
 
-  const sendTokens = async () => {};
+  const sendTokens = async () => {
+    setLoading(true);
+    try {
+      for (let i = 0; i < recipientAddresses.length; i++) {
+        const recipientAddress = recipientAddresses[i];
+        await airdropNFTs(token, [recipientAddress], 1); // airdrop the token to each recipient
+      }
+    } catch (error) {
+      setError(`Error sending tokens: ${error?.message}`);
+      console.error(error);
+    }
+    setLoading(false);
+  };
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     setError("");
 
-    if (owners.length === 0) {
-      setError("Please copy or enter owner addresses");
+    if (recipientAddresses.length === 0) {
+      setError("Please enter recipient addresses");
       return;
     }
 
     await sendTokens();
   };
 
+
   return (
     <div>
       <div className="container mx-auto p-4">
         <h1 className="text-2xl font-bold mb-4">Airdrop Tokens</h1>
         {error && <div className="text-red-500 mb-2">{error}</div>}
+        <div className="flex items-center mb-4">
+          <div className="mr-2">
+            Recipient Addresses ({recipientAddresses.length})
+          </div>
+        </div>
         <button
           type="submit"
+          onClick={handleSubmit}
           className="p-2 bg-blue-500 text-white rounded-lg"
           disabled={loading}
         >
-          {loading ? "Sending tokens..." : "Send Tokens to All"}
+          {loading ? "Sending tokens..." : "Send Tokens"}
         </button>
       </div>
     </div>
   );
+
 };
 
 export default AirdropTokens;

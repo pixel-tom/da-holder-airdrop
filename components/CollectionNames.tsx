@@ -11,8 +11,7 @@ const CollectionNames = () => {
   const [error, setError] = useState("");
   const [collectionName, setCollectionName] = useState("");
 
-  let typingTimer: NodeJS.Timeout;
-
+  // Function to send request to HelloMoon API to get collection names and ids based off user input
   const getCollections = async () => {
     setLoading(true);
     setError("");
@@ -52,6 +51,8 @@ const CollectionNames = () => {
     setLoading(false);
   };
 
+
+  // Function to handle copying collection id from the search menu
   const handleCopyClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     const selectedOption =
       e.currentTarget.parentNode?.querySelector("option:checked");
@@ -63,6 +64,7 @@ const CollectionNames = () => {
     }
   };
 
+  // Function to handle starting the getCollections function
   const handleSearchClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     getCollections();
