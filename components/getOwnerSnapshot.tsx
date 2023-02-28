@@ -151,15 +151,15 @@ const HoldersList = ({
         {owners.length > 0 && (
           <div className="flex flex-nowrap mt-8 gap-5">
             <div className="w-full bg-white rounded-lg shadow">
-              <div className="flex">
+              <div className="flex flex-row">
                 <h2 className="text-lg font-bold px-4 py-2 border-b border-gray-300">
                   Holder Wallets
                 </h2>
                 <h2 className="text-lg ml-auto mr-2 text-blue-400 my-auto text-right font-bold px-1">
-                  Unique Holders: {totalHolders}
+                  Unique Holders: {totalHolders} / Total Holders:{" "}
+                  {owners.length}
                 </h2>
               </div>
-
               <div className="overflow-y-auto max-w-4xl mx-auto max-h-96">
                 {owners.map((owner, index) => (
                   <div
@@ -171,19 +171,32 @@ const HoldersList = ({
                 ))}
               </div>
               <div className="flex justify-end mt-4">
-              
-              <button
-                className="bg-blue-500 w-1/2 text-white py-2 px-4 rounded-lg font-medium"
-                onClick={handleUpdateAddresses}
-              >
-                Update Addresses
-              </button>
-              <button
-                onClick={handleClearAddresses}
-                className="bg-red-500 w-1/2 text-white px-4 py-2 rounded-lg"
-              >
-                Clear Addresses
-              </button>
+                <button
+                  className="bg-blue-500 w-1/2 text-white py-2 px-4 rounded-lg font-medium"
+                  onClick={handleUpdateAddresses}
+                >
+                  Update Addresses
+                </button>
+                
+                <button
+                  className="bg-green-500 w-1/2 text-white py-2 px-4 rounded-lg font-medium"
+                  onClick={() => {
+                    const uniqueAddresses = ownersList.filter(
+                      (address, index) => ownersList.indexOf(address) === index
+                    );
+                    updateRecipientAddresses(uniqueAddresses);
+                    setAddresses(uniqueAddresses);
+                  }}
+                >
+                  Update Unique Addresses
+                </button>
+
+                <button
+                  onClick={handleClearAddresses}
+                  className="bg-red-500 w-1/2 text-white px-4 py-2 rounded-lg"
+                >
+                  Clear Addresses
+                </button>
               </div>
             </div>
           </div>

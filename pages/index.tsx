@@ -6,6 +6,7 @@ import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import AirdropTokens from "../components/AirdropTokens";
 import { useState } from "react";
 import Link from "next/link";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 interface Props {
   setOwnerAccounts: React.Dispatch<React.SetStateAction<string[]>>;
@@ -14,7 +15,8 @@ interface Props {
 
 const Home: React.FC<Props> = ({ setOwnerAccounts }) => {
   const [recipientAddresses, setRecipientAddresses] = useState<string[]>([]);
-
+  const wallet = useWallet();
+  const publicKey = wallet.publicKey?.toBase58();
   const updateRecipientAddresses = (addresses: string[]) => {
     setRecipientAddresses(addresses);
   };

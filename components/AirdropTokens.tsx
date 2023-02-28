@@ -8,13 +8,25 @@ import {
   TransactionInstruction,
   SystemProgram,
 } from "@solana/web3.js";
+import HeliusNFTs from "./HeliusNFTs";
 
-const AirdropTokens = ({ recipientAddresses }: { recipientAddresses: string[] }) => {
+const AirdropTokens = ({
+  recipientAddresses,
+}: {
+  recipientAddresses: string[];
+}) => {
   const [token, setToken] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  const [owners, setOwners] = useState<string[]>([]);
+  const wallet = useWallet();
+  const publicKey = wallet.publicKey?.toBase58();
+  const [showHeliusNFTs, setShowHeliusNFTs] = useState(false);
+  const [selectedMintAddresses, setSelectedMintAddresses] = useState<string[]>(
+    []
+  );
+  const [selectedTokens, setSelectedTokens] = useState<string[]>([]);
+  const [mintAddresses, setMintAddresses] = useState<string[]>([]);
+  const [totalMints, setTotalMints] = useState(mintAddresses.length);
 
   async function airdropNFTs(
     mintAddress: string,
@@ -35,8 +47,10 @@ const AirdropTokens = ({ recipientAddresses }: { recipientAddresses: string[] })
     const mintInfo = await connection.getParsedAccountInfo(mintPublicKey);
 
     // i have to look into this
-    const decimals = mintInfo.value!.data instanceof Buffer ? undefined : mintInfo.value!.data.parsed.info.decimals;
-
+    const decimals =
+      mintInfo.value!.data instanceof Buffer
+        ? undefined
+        : mintInfo.value!.data.parsed.info.decimals;
 
     // Converts recipient addresses to public keys
     const recipientPublicKeys = recipientAddresses.map(
@@ -74,20 +88,41 @@ const AirdropTokens = ({ recipientAddresses }: { recipientAddresses: string[] })
     const signature = await connection.sendTransaction(transaction, []);
     console.log(`Transaction ${signature} submitted.`);
   }
-  // just have to replace mintAddress with the address of the NFT mint you want to airdrop,
-  // recipientAddresses with an array of recieving addresses, and amount with the number
-  // of NFTs to airdrop to each recipient.
+
+  function handleToggleHeliusNFTs() {
+    setShowHeliusNFTs(!showHeliusNFTs);
+  }
+
+  const handleSelectMintAddress = (mintAddress: string) => {
+    if (!mintAddresses.includes(mintAddress)) {
+      setMintAddresses([...mintAddresses, mintAddress]);
+    }
+  };
 
   const sendTokens = async () => {
     setLoading(true);
     try {
+      if (recipientAddresses.length === 0) {
+        throw new Error("Please enter recipient addresses");
+      }
+
+      if (selectedMintAddresses.length === 0) {
+        throw new Error("Please select NFT mints to airdrop");
+      }
+
+      //
       for (let i = 0; i < recipientAddresses.length; i++) {
         const recipientAddress = recipientAddresses[i];
-        await airdropNFTs(token, [recipientAddress], 1); // airdrop the token to each recipient
+        for (let j = 0; j < selectedMintAddresses.length; j++) {
+          const mintAddress = selectedMintAddresses[j];
+          await airdropNFTs(mintAddress, [recipientAddress], 1); // airdrop the selected NFT to each recipient
+        }
       }
+
+      // clear the selected mint addresses
+      setSelectedMintAddresses([]);
     } catch (error) {
       setError(`Error sending tokens: ${(error as Error)?.message}`);
-
       console.error(error);
     }
     setLoading(false);
@@ -96,15 +131,12 @@ const AirdropTokens = ({ recipientAddresses }: { recipientAddresses: string[] })
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     setError("");
-
-    if (recipientAddresses.length === 0) {
-      setError("Please enter recipient addresses");
-      return;
-    }
-
     await sendTokens();
   };
 
+  const updateSelectedMintAddresses = (mintAddresses: string[]) => {
+    setSelectedMintAddresses(mintAddresses);
+  };
 
   return (
     <div>
@@ -112,10 +144,32 @@ const AirdropTokens = ({ recipientAddresses }: { recipientAddresses: string[] })
         <h1 className="text-2xl font-bold mb-4">Airdrop Tokens</h1>
         {error && <div className="text-red-500 mb-2">{error}</div>}
         <div className="flex items-center mb-4">
-          <div className="mr-2">
+          <div className="mr-2 text-lg text-gray-700 font-bold">
             Recipient Addresses ({recipientAddresses.length})
           </div>
+          <div className="mr-2 text-lg text-gray-700 font-bold">
+            NFTs to Airdrop ({selectedMintAddresses.length})
+          </div>
+
+          <button
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
+            onClick={handleToggleHeliusNFTs}
+          >
+            {showHeliusNFTs ? "Hide NFTs" : "Show NFTs"}
+          </button>
         </div>
+        {showHeliusNFTs && (
+          <div style={{ maxWidth: "720px" }}>
+            <HeliusNFTs
+              publicKey={publicKey}
+              setSelectedToken={setSelectedTokens}
+              selectedTokens={selectedTokens}
+              setSelectedMintAddress={handleSelectMintAddress}
+              setSelectedMintAddresses={setMintAddresses}
+              updateSelectedMintAddresses={updateSelectedMintAddresses}
+            />
+          </div>
+        )}
         <button
           type="submit"
           onClick={handleSubmit}
@@ -127,7 +181,6 @@ const AirdropTokens = ({ recipientAddresses }: { recipientAddresses: string[] })
       </div>
     </div>
   );
-
 };
 
 export default AirdropTokens;
