@@ -224,43 +224,45 @@ const HeliusNFTs: React.FC<Props> = ({
 
   return (
     <div className="h-200 mt-2 p-4 flex flex-col items-center justify-center">
-      <div className="w-full max-w-screen-lg mb-4">
-        <div className="w-full max-w-screen-lg mb-4 h-96  overflow-y-auto">
-          <div className="grid grid-cols-10 gap-2">
-            {metadata
-              .filter(
-                (token: TokenMetadata) =>
-                  token.offChainMetadata?.metadata?.image !== null
-              )
-              .map((token: TokenMetadata) => (
-                <div
-                  key={token.account}
-                  className={`bg-gray-800 rounded-lg shadow-md overflow-hidden ${
-                    selectedTokens.includes(token.account)
-                      ? "border-4 border-indigo-500"
-                      : ""
-                  }`}
-                  onClick={() => handleSelectToken(token.account)}
-                >
-                  <img
-                    src={
-                      token.offChainMetadata?.metadata?.image ||
-                      "path-to-placeholder-image.jpg"
-                    }
-                    alt={
-                      token.offChainMetadata &&
-                      token.offChainMetadata.metadata &&
-                      token.offChainMetadata.metadata.description
-                    }
-                    className="w-full h-50 object-cover transition duration-500 transform hover:scale-110"
-                  />
-                </div>
-              ))}
+      <div className="w-full max-w-screen-lg mb-4 flex flex-col items-center justify-center">
+        {loading && <p className="text-gray-400 flex items-center justify-center h-96">Loading...</p>}
+        {!loading && (
+          <div className="w-full max-w-screen-lg mb-4 h-96 overflow-y-auto">
+            <div className="grid grid-cols-10 gap-2">
+              {metadata
+                .filter(
+                  (token: TokenMetadata) =>
+                    token.offChainMetadata?.metadata?.image !== null
+                )
+                .map((token: TokenMetadata) => (
+                  <div
+                    key={token.account}
+                    className={`bg-gray-800 rounded-lg shadow-md overflow-hidden ${
+                      selectedTokens.includes(token.account)
+                        ? "border-4 border-indigo-500"
+                        : ""
+                    }`}
+                    onClick={() => handleSelectToken(token.account)}
+                  >
+                    <img
+                      src={
+                        token.offChainMetadata?.metadata?.image ||
+                        "path-to-placeholder-image.jpg"
+                      }
+                      alt={
+                        token.offChainMetadata &&
+                        token.offChainMetadata.metadata &&
+                        token.offChainMetadata.metadata.description
+                      }
+                      className="w-full h-50 object-cover transition duration-500 transform hover:scale-110"
+                    />
+                  </div>
+                ))}
+            </div>
           </div>
-        </div>
-
-        
-        <div className="flex mt-4 justify-between mb-2">
+        )}
+  
+        <div className="flex flex-row gap-8 mt-4 justify-between mb-2">
           <p className="font-bold my-auto">
             Selected NFTs: {selectedMintAddresses.length}
           </p>
@@ -305,9 +307,10 @@ const HeliusNFTs: React.FC<Props> = ({
           </button>
         </div>
       </div>
-      {loading && <p className="text-gray-400">Loading...</p>}
     </div>
   );
+  
+
 };
 
 export default HeliusNFTs;
