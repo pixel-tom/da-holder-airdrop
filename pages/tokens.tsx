@@ -3,6 +3,9 @@ import Link from "next/link";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import FetchTokens from "../components/FetchTokens";
 
+import WalletButton from "../components/FindAllByOwner";
+import HeliusMintlist from "../components/HeliusMintlist";
+
 const tokens = () => {
   return (
     <div>
@@ -16,6 +19,10 @@ const tokens = () => {
       </div>
       <div>
         <FetchTokens />
+      </div>
+      <div>
+        <WalletButton />
+        <HeliusMintlist />
       </div>
     </div>
   );
