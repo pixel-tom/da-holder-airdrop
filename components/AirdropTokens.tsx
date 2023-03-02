@@ -139,27 +139,72 @@ const AirdropTokens = ({
   };
 
   return (
-    <div>
-      <div className="container mx-auto p-4">
-        <h1 className="text-2xl font-bold mb-4">Airdrop Tokens</h1>
-        {error && <div className="text-red-500 mb-2">{error}</div>}
-        <div className="flex items-center mb-4">
-          <div className="mr-2 text-lg text-gray-700 font-bold">
-            Recipient Addresses ({recipientAddresses.length})
+    <div className="flex w-full flex-wrap justify-center">
+      <div className="w-full">
+        <div className="rounded-lg p-4 flex flex-col md:flex-row md:items-center md:justify-between">
+          <div className="mb-4 md:mb-0 text-2xl font-bold text-gray-600">
+            <button
+              className="px-4 py-2  flex items-center"
+              onClick={handleToggleHeliusNFTs}
+            >
+              {showHeliusNFTs ? (
+                <>
+                  Hide Wallet NFTs
+                  <svg
+                    className="w-4 h-4 ml-3 transform rotate-180"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 0a1 1 0 01.832.445l8 11a1 1 0 01-.164 1.4 1 1 0 01-1.236-.164L10 3.414 2.568 12.68a1 1 0 01-1.4.164 1 1 0 01-.164-1.4l8-11A1 1 0 0110 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </>
+              ) : (
+                <>
+                  Show Wallet NFTs
+                  <svg
+                    className="w-4 h-4 ml-3"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 0a1 1 0 01.832.445l8 11a1 1 0 01-.164 1.4 1 1 0 01-1.236-.164L10 3.414 2.568 12.68a1 1 0 01-1.4.164 1 1 0 01-.164-1.4l8-11A1 1 0 0110 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </>
+              )}
+            </button>
           </div>
-          <div className="mr-2 text-lg text-gray-700 font-bold">
-            NFTs to Airdrop ({selectedMintAddresses.length})
+          <div className="flex items-center">
+            <div className="mr-4 text-lg text-gray-400 font-bold">
+              Recipient Addresses ({recipientAddresses.length})
+            </div>
+            <div className="mr-4 text-lg text-gray-400 font-bold">
+              NFTs Selected ({selectedMintAddresses.length})
+            </div>
+            <button
+              type="submit"
+              onClick={handleSubmit}
+              className="ml-4 px-4 py-2 text-xl animate-bounce bg-gradient-to-tr from-blue-400 to-green-300 text-white rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 disabled:opacity-50 disabled:animate-none disabled:hover:cursor-not-allowed disabled:hover:from-blue-400 disabled:hover:to-green-300"
+              disabled={
+                loading ||
+                recipientAddresses.length === 0 ||
+                selectedMintAddresses.length === 0
+              }
+            >
+              {loading ? "Sending tokens..." : "Airdrop NFTs"}
+            </button>
           </div>
-
-          <button
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
-            onClick={handleToggleHeliusNFTs}
-          >
-            {showHeliusNFTs ? "Hide NFTs" : "Show NFTs"}
-          </button>
         </div>
         {showHeliusNFTs && (
-          <div style={{ maxWidth: "720px" }}>
+          <div className="max-w-720 mt-4">
             <HeliusNFTs
               publicKey={publicKey}
               setSelectedToken={setSelectedTokens}
@@ -170,14 +215,7 @@ const AirdropTokens = ({
             />
           </div>
         )}
-        <button
-          type="submit"
-          onClick={handleSubmit}
-          className="p-2 bg-blue-500 text-white rounded-lg"
-          disabled={loading}
-        >
-          {loading ? "Sending tokens..." : "Send Tokens"}
-        </button>
+        {error && <div className="text-red-500 mt-4">{error}</div>}
       </div>
     </div>
   );

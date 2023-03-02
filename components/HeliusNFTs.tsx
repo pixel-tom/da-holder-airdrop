@@ -129,7 +129,7 @@ type TokenMetadata = {
 
 const HeliusNFTs: React.FC<Props> = ({
   publicKey,
-  updateSelectedMintAddresses
+  updateSelectedMintAddresses,
 }) => {
   const [balances, setBalances] = useState<any>(null);
   const [metadata, setMetadata] = useState<TokenMetadata[]>([]);
@@ -225,7 +225,11 @@ const HeliusNFTs: React.FC<Props> = ({
   return (
     <div className="h-200 mt-2 p-4 flex flex-col items-center justify-center">
       <div className="w-full max-w-screen-lg mb-4 flex flex-col items-center justify-center">
-        {loading && <p className="text-gray-400 flex items-center justify-center h-96">Loading...</p>}
+        {loading && (
+          <p className="text-gray-400 animate-pulse flex items-center justify-center h-96">
+            Loading Wallet NFTs...
+          </p>
+        )}
         {!loading && (
           <div className="w-full max-w-screen-lg mb-4 h-96 overflow-y-auto">
             <div className="grid grid-cols-10 gap-2">
@@ -254,6 +258,8 @@ const HeliusNFTs: React.FC<Props> = ({
                         token.offChainMetadata.metadata &&
                         token.offChainMetadata.metadata.description
                       }
+                      loading="lazy"
+                      
                       className="w-full h-50 object-cover transition duration-500 transform hover:scale-110"
                     />
                   </div>
@@ -261,17 +267,12 @@ const HeliusNFTs: React.FC<Props> = ({
             </div>
           </div>
         )}
-  
-        <div className="flex flex-row gap-8 mt-4 justify-between mb-2">
+
+        <div className="flex flex-row w-full mt-4 justify-between mb-2">
           <p className="font-bold my-auto">
             Selected NFTs: {selectedMintAddresses.length}
           </p>
-          <button
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
-            onClick={handleUpdateSelectedMintAddresses}
-          >
-            Update NFTs to Airdrop
-          </button>
+
           <button
             className="px-4 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
             onClick={() => {
@@ -296,6 +297,7 @@ const HeliusNFTs: React.FC<Props> = ({
           >
             Select All
           </button>
+
           <button
             className="px-2 py-1 rounded-md bg-gray-700 text-white hover:bg-gray-800"
             onClick={() => {
@@ -305,12 +307,19 @@ const HeliusNFTs: React.FC<Props> = ({
           >
             Clear Selection
           </button>
+
+          <div className="flex flex-end gap-2">
+            <button
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
+              onClick={handleUpdateSelectedMintAddresses}
+            >
+              Update NFTs to Airdrop
+            </button>
+          </div>
         </div>
       </div>
     </div>
   );
-  
-
 };
 
 export default HeliusNFTs;

@@ -107,7 +107,7 @@ const HoldersList = ({
   const totalHolders = uniqueHolders.size;
 
   return (
-    <div className="bg-gray-200 w-max">
+    <div className="w-max">
       <div className="mx-auto px-4 py-8 w-max">
         <div className="flex flex-row">
           <div className="w-full flex md:w-2/5 mr-24">
@@ -135,7 +135,7 @@ const HoldersList = ({
               </div>
               <button
                 type="submit"
-                className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 focus:outline-none focus:bg-blue-600 disabled:opacity-50"
+                className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg shadow-lg font-medium hover:bg-blue-600 focus:outline-none focus:bg-blue-600 disabled:opacity-50"
                 disabled={loading}
               >
                 {loading ? "Loading..." : "Generate Holder Snapshot"}
@@ -153,10 +153,10 @@ const HoldersList = ({
             <div className="w-full bg-white rounded-lg shadow">
               <div className="flex flex-row">
                 <h2 className="text-lg font-bold px-4 py-2 border-b border-gray-300">
-                  Holder Wallets
+                  Holder Wallet List
                 </h2>
                 <h2 className="text-lg ml-auto mr-2 text-blue-400 my-auto text-right font-bold px-1">
-                  Unique Holders: {totalHolders} / Total Holders:{" "}
+                  Unique Holders: {totalHolders} / Total Wallets:{" "}
                   {owners.length}
                 </h2>
               </div>
@@ -170,16 +170,15 @@ const HoldersList = ({
                   </div>
                 ))}
               </div>
-              <div className="flex justify-end mt-4">
+              <div className="flex gap-3 justify-end mt-4">
                 <button
-                  className="bg-blue-500 w-1/2 text-white py-2 px-4 rounded-lg font-medium"
+                  className="bg-blue-400 w-1/2 text-white py-2 px-4 rounded-lg font-medium"
                   onClick={handleUpdateAddresses}
                 >
                   Update Addresses
                 </button>
-                
                 <button
-                  className="bg-green-500 w-1/2 text-white py-2 px-4 rounded-lg font-medium"
+                  className="bg-green-400 w-1/2 text-white py-2 px-4 rounded-lg font-medium"
                   onClick={() => {
                     const uniqueAddresses = ownersList.filter(
                       (address, index) => ownersList.indexOf(address) === index
@@ -190,10 +189,9 @@ const HoldersList = ({
                 >
                   Update Unique Addresses
                 </button>
-
                 <button
                   onClick={handleClearAddresses}
-                  className="bg-red-500 w-1/2 text-white px-4 py-2 rounded-lg"
+                  className="bg-red-400 w-1/2 text-white px-4 py-2 rounded-lg"
                 >
                   Clear Addresses
                 </button>
