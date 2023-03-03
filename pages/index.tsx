@@ -1,7 +1,8 @@
 /* eslint-disable react/no-unescaped-entities */
 import Head from "next/head";
-import HoldersList from "../components/getOwnerSnapshot";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import HoldersList from "../components/getOwnerSnapshot";
 import AirdropTokens from "../components/AirdropTokens";
 import { useState } from "react";
 import Link from "next/link";
@@ -15,6 +16,7 @@ interface Props {
 }
 
 const Home: React.FC<Props> = ({ setOwnerAccounts }) => {
+  const { connected } = useWallet();
   const [recipientAddresses, setRecipientAddresses] = useState<string[]>([]);
 
   const updateRecipientAddresses = (addresses: string[]) => {
@@ -22,7 +24,7 @@ const Home: React.FC<Props> = ({ setOwnerAccounts }) => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen overflow-x-auto">
       <Head>
         <title>Next.js + TailwindCSS</title>
         <link rel="icon" href="/favicon.ico" />
@@ -38,43 +40,62 @@ const Home: React.FC<Props> = ({ setOwnerAccounts }) => {
           <WalletMultiButton />
         </div>
       </nav>
-      <main className="flex flex-1 flex-col items-center justify-center h-screen w-full mx-auto py-36 bg-slate-100">
-        <div className="flex flex-col items-center justify-center mx-auto mb-16">
-          <h1 className="font-medium text-4xl mb-5">Welcome</h1>
-          <p className="text-gray-600 w-3/4 text-base">
-            Our model uses HelloMoon's advanced data systems to generate a
-            current Holder Wallet Snapshot and allows you to send the .
-          </p>
-        </div>
-        <div className="flex items-center justify-center mx-auto mb-16">
-          <div className="bg-gradient-to-bl from-blue-200 to-green-50 rounded-lg shadow-xl px-6 py-4">
-            <Tabs>
-              <TabList className="flex mb-8">
-                <Tab className="text-xl font-medium text-gray-700 px-6 py-2 bg-none rounded-t-lg mr-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none">
-                  Holder Snapshot
-                </Tab>
-                <Tab className="text-xl font-medium text-gray-700 px-6 py-2 bg-none rounded-t-lg mr-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none">
-                  Collection Mint List
-                </Tab>
-              </TabList>
-
-              <TabPanel>
-                <div className="flex flex-col items-center justify-center mx-auto mb-16">
-                  <HoldersList
-                    setOwnerAccounts={setOwnerAccounts}
-                    updateRecipientAddresses={updateRecipientAddresses}
-                  />
-                </div>
-              </TabPanel>
-
-              <TabPanel>
-                <div>
-                  <HeliusMintlist />
-                </div>
-              </TabPanel>
-            </Tabs>
+      <main className="pt-36 pb-52 flex flex-1 flex-col items-center justify-center h-screen w-screen mx-auto bg-slate-100">
+        {!connected && (
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <h1 className="font-medium text-4xl mb-5 text-gray-500 text-center">
+              Please Connect Wallet
+            </h1>
           </div>
-        </div>
+        )}
+        {connected && (
+          <>
+            <div className="flex flex-col items-center justify-center mx-auto"></div>
+            <div className="flex items-center justify-center mx-auto w-3/4">
+              <div className="bg-gradient-to-bl from-blue-200 to-green-50 rounded-lg shadow-xl px-4 py-4 w-full">
+                <Tabs>
+                  <TabList className="grid grid-cols-3 gap-2 bg-slate-50 bg-opacity-30 rounded-t-lg mb-8 overflow-hidden w-full">
+                    <Tab className="flex items-center justify-center text-lg font-medium text-gray-600 py-4 transition duration-300 ease-in-out hover:bg-gray-100 focus:bg-gray-100 focus:outline-none border-b-2 border-transparent hover:border-gray-300 focus:border-gray-300">
+                      <span className="mx-2">Holder Snapshot</span>
+                      <div className="w-3 h-3 rounded-full ml-1 animate-pulse bg-green-300 hidden md:block"></div>
+                    </Tab>
+                    <Tab className="flex items-center justify-center text-lg font-medium text-gray-600 py-4 transition duration-300 ease-in-out hover:bg-gray-100 focus:bg-gray-100 focus:outline-none border-b-2 border-transparent hover:border-gray-300 focus:border-gray-300">
+                      <span className="mx-2">Collection Mint List</span>
+                      <div className="w-3 h-3 rounded-full ml-1 animate-pulse bg-green-300 hidden md:block"></div>
+                    </Tab>
+                    <Tab className="disabled:stroke-none flex items-center justify-center text-lg font-medium text-gray-600 py-4 transition duration-300 ease-in-out hover:bg-gray-100 focus:bg-gray-100 focus:outline-none border-b-2 border-transparent hover:border-gray-300 focus:border-gray-300">
+                      <span className="mx-2">Rarity Mint List</span>
+                      <div className="w-3 h-3 rounded-full ml-1 bg-red-400 hidden md:block"></div>
+                    </Tab>
+                  </TabList>
+
+                  <TabPanel>
+                    <div className="flex flex-col items-center justify-center mx-auto">
+                      <p className="text-gray-600 w-4/5 text-base">
+                        Use HelloMoon's advanced data systems to generate a
+                        current Holder.
+                      </p>
+                      <HoldersList
+                        setOwnerAccounts={setOwnerAccounts}
+                        updateRecipientAddresses={updateRecipientAddresses}
+                      />
+                    </div>
+                  </TabPanel>
+
+                  <TabPanel>
+                    <div className="mx-auto w-full">
+                      <HeliusMintlist />
+                    </div>
+                  </TabPanel>
+
+                  <TabPanel>
+                    <div></div>
+                  </TabPanel>
+                </Tabs>
+              </div>
+            </div>
+          </>
+        )}
       </main>
       <footer className=" fixed bottom-0 w-full p-4 border-t border-gray-300 bg-white">
         <AirdropTokens recipientAddresses={recipientAddresses} />

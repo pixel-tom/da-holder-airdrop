@@ -203,8 +203,9 @@ const AirdropTokens = ({
             </button>
           </div>
         </div>
+  
         {showHeliusNFTs && (
-          <div className="max-w-720 mt-4">
+          <div className={`max-w-720 mt-4 ${showHeliusNFTs ? 'show' : ''}`}>
             <HeliusNFTs
               publicKey={publicKey}
               setSelectedToken={setSelectedTokens}

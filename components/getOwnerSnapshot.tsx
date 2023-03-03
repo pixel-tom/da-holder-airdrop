@@ -107,13 +107,13 @@ const HoldersList = ({
   const totalHolders = uniqueHolders.size;
 
   return (
-    <div className="w-max">
-      <div className="mx-auto px-4 py-8 w-max">
-        <div className="flex flex-row">
-          <div className="w-full flex md:w-2/5 mr-24">
+    <div className="w-full mx-auto">
+      <div className="mx-auto px-4 py-8 w-full">
+        <div className="flex flex-col gap-32 mx-auto w-full max-w-5xl">
+          <div className="w-full flex">
             <CollectionNames />
           </div>
-          <div className="w-full md:w-3/5">
+          <div className="w-full">
             <form onSubmit={handleSubmit} className="">
               <div className="mb-4">
                 <label
@@ -133,13 +133,18 @@ const HoldersList = ({
                 />
                 {error && <p className="text-red-500 mt-2">{error}</p>}
               </div>
-              <button
-                type="submit"
-                className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg shadow-lg font-medium hover:bg-blue-600 focus:outline-none focus:bg-blue-600 disabled:opacity-50"
-                disabled={loading}
-              >
-                {loading ? "Loading..." : "Generate Holder Snapshot"}
-              </button>
+              <div className="rounded-xl mx-auto wavy-button bg-gradient-to-r p-[3px] from-[#6EE7B7] to-[#3B82F6] wavy-div">
+                <button
+                  type="submit"
+                  className="w-full px-4 py-2 relative  bg-slate-100 text-gray-600 rounded-lg shadow-lg font-medium hover:bg-blue-100 focus:outline-none focus: disabled:opacity-50 wavy-button"
+                  disabled={loading}
+                >
+                  <span className="z-10 relative">
+                    {loading ? "Loading..." : "Generate Holder Snapshot"}
+                  </span>
+                  <span className="z-0 absolute top-0 left-0 right-0 bottom-0 overflow-hidden"></span>
+                </button>
+              </div>
             </form>
           </div>
         </div>
@@ -149,9 +154,9 @@ const HoldersList = ({
           </div>
         )}
         {owners.length > 0 && (
-          <div className="flex flex-nowrap mt-8 gap-5">
+          <div className="flex mt-8 gap-5">
             <div className="w-full bg-white rounded-lg shadow">
-              <div className="flex flex-row">
+              <div className="flex flex-row ">
                 <h2 className="text-lg font-bold px-4 py-2 border-b border-gray-300">
                   Holder Wallet List
                 </h2>
@@ -160,7 +165,7 @@ const HoldersList = ({
                   {owners.length}
                 </h2>
               </div>
-              <div className="overflow-y-auto max-w-4xl mx-auto max-h-96">
+              <div className="overflow-y-auto mx-auto max-h-96">
                 {owners.map((owner, index) => (
                   <div
                     key={index}
@@ -191,9 +196,22 @@ const HoldersList = ({
                 </button>
                 <button
                   onClick={handleClearAddresses}
-                  className="bg-red-400 w-1/2 text-white px-4 py-2 rounded-lg"
+                  className="bg-red-400 w-1/2 text-white px-4 py-2 rounded-lg flex items-center"
                 >
-                  Clear Addresses
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 mr-2"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M4,4 L16,16"></path>
+                    <path d="M4,16 L16,4"></path>
+                  </svg>
+                  <span>Clear Addresses</span>
                 </button>
               </div>
             </div>

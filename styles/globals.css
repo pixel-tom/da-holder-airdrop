@@ -1,3 +1,31 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
+
+.wavy-button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    background-image: linear-gradient(to right, #ebfff8, #cee1ff);
+    border-radius: 0.25rem;
+    animation: wave-animation 1.5s linear infinite;
+    background-size: 1000% 100%;
+    
+  }
+  
+  @keyframes wave-animation {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  
