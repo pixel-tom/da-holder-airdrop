@@ -30,7 +30,7 @@ const Home: React.FC<Props> = ({ setOwnerAccounts }) => {
         <title>Next.js + TailwindCSS</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <nav className="fixed top-0 w-full drop-shadow-md flex items-center justify-between bg-white py-4 px-6">
+      <nav className="fixed z-10 top-0 w-full drop-shadow-md flex items-center justify-between bg-white py-4 px-6">
         <div>
           <h1 className="text-gray-600 font-bold text-xl">da-holder-airdrop</h1>
         </div>
@@ -41,7 +41,7 @@ const Home: React.FC<Props> = ({ setOwnerAccounts }) => {
           <WalletMultiButton />
         </div>
       </nav>
-      <main className="pt-36 pb-52 flex flex-1 flex-col items-center justify-center h-screen w-screen mx-auto bg-slate-100">
+      <main className="pt-36 pb-52 flex flex-1 flex-col items-center justify-center h-screen w-full mx-auto bg-slate-100">
         {!connected && (
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <h1 className="font-medium text-4xl mb-5 text-gray-500 text-center">
@@ -52,7 +52,7 @@ const Home: React.FC<Props> = ({ setOwnerAccounts }) => {
         {connected && (
           <>
             <div className="flex flex-col items-center justify-center mx-auto"></div>
-            <div className="flex items-center justify-center mx-auto w-3/4">
+            <div className="flex items-center justify-center mx-auto xs:w-full sm:w-5/6 md:w-3/4 lg:w-3/5 xl:w-  2xl:w-1/2">
               <div className="bg-gradient-to-bl from-blue-200 to-green-50 rounded-lg shadow-xl px-4 py-4 w-full">
                 <Tabs>
                   <TabList className="grid grid-cols-3 gap-2 bg-slate-50 bg-opacity-30 rounded-t-lg mb-8 overflow-hidden w-full">
@@ -99,7 +99,7 @@ const Home: React.FC<Props> = ({ setOwnerAccounts }) => {
           </>
         )}
       </main>
-      <footer className=" fixed bottom-0 w-full p-4 border-t border-gray-300 bg-white">
+      <footer className=" fixed bottom-0 w-full px-4 py-2 border-t border-gray-300 bg-white">
         <AirdropTokens recipientAddresses={recipientAddresses} />
       </footer>
     </div>

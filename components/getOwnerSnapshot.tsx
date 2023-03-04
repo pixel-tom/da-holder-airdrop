@@ -109,7 +109,7 @@ const HoldersList = ({
   return (
     <div className="w-full mx-auto">
       <div className="mx-auto px-4 py-8 w-full">
-        <div className="flex flex-col gap-32 mx-auto w-full max-w-5xl">
+        <div className="flex flex-col gap-32 mx-auto w-full">
           <div className="w-full flex">
             <CollectionNames />
           </div>
@@ -133,16 +133,13 @@ const HoldersList = ({
                 />
                 {error && <p className="text-red-500 mt-2">{error}</p>}
               </div>
-              <div className="rounded-xl mx-auto wavy-button bg-gradient-to-r p-[3px] from-[#6EE7B7] to-[#3B82F6] wavy-div">
+              <div className="rounded-xl mx-auto bg-gradient-to-r p-[3px] from-[#6EE7B7] to-[#3B82F6]">
                 <button
                   type="submit"
-                  className="w-full px-4 py-2 relative  bg-slate-100 text-gray-600 rounded-lg shadow-lg font-medium hover:bg-blue-100 focus:outline-none focus: disabled:opacity-50 wavy-button"
+                  className="w-full px-4 py-2  bg-slate-100 text-gray-600 rounded-lg shadow-lg font-medium hover: focus:outline-none focus: disabled:opacity-50"
                   disabled={loading}
                 >
-                  <span className="z-10 relative">
-                    {loading ? "Loading..." : "Generate Holder Snapshot"}
-                  </span>
-                  <span className="z-0 absolute top-0 left-0 right-0 bottom-0 overflow-hidden"></span>
+                  {loading ? "Loading..." : "Generate Holder Snapshot"}
                 </button>
               </div>
             </form>

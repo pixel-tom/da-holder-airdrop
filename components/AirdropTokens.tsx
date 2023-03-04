@@ -15,7 +15,6 @@ const AirdropTokens = ({
 }: {
   recipientAddresses: string[];
 }) => {
-  const [token, setToken] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const wallet = useWallet();
@@ -26,7 +25,6 @@ const AirdropTokens = ({
   );
   const [selectedTokens, setSelectedTokens] = useState<string[]>([]);
   const [mintAddresses, setMintAddresses] = useState<string[]>([]);
-  const [totalMints, setTotalMints] = useState(mintAddresses.length);
 
   async function airdropNFTs(
     mintAddress: string,
@@ -142,7 +140,7 @@ const AirdropTokens = ({
     <div className="flex w-full flex-wrap justify-center">
       <div className="w-full">
         <div className="rounded-lg p-4 flex flex-col md:flex-row md:items-center md:justify-between">
-          <div className="mb-4 md:mb-0 text-2xl font-bold text-gray-600">
+          <div className="mb-1 md:mb-0 text-xl font-bold text-gray-600">
             <button
               className="px-4 py-2  flex items-center"
               onClick={handleToggleHeliusNFTs}
@@ -183,11 +181,11 @@ const AirdropTokens = ({
             </button>
           </div>
           <div className="flex items-center">
-            <div className="mr-4 text-lg text-gray-400 font-bold">
-              Recipient Addresses ({recipientAddresses.length})
+            <div className="mr-4 text-md text-gray-400 font-bold">
+              Recipient Addresses ( {recipientAddresses.length} )
             </div>
-            <div className="mr-4 text-lg text-gray-400 font-bold">
-              NFTs Selected ({selectedMintAddresses.length})
+            <div className="mr-4 text-md text-gray-400 font-bold">
+              NFTs Selected ( {selectedMintAddresses.length} )
             </div>
             <button
               type="submit"
@@ -203,9 +201,9 @@ const AirdropTokens = ({
             </button>
           </div>
         </div>
-  
+
         {showHeliusNFTs && (
-          <div className={`max-w-720 mt-4 ${showHeliusNFTs ? 'show' : ''}`}>
+          <div className={`max-w-720 mt-4 ${showHeliusNFTs ? "show" : ""}`}>
             <HeliusNFTs
               publicKey={publicKey}
               setSelectedToken={setSelectedTokens}

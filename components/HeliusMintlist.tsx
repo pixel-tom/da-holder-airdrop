@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Helius, MintlistResponse } from "helius-sdk";
+import RemoveListings from "./RemoveListings";
 
 const HeliusMintlist = () => {
   const [response, setResponse] = useState<MintlistResponse | undefined>(
@@ -8,13 +9,14 @@ const HeliusMintlist = () => {
   const [creator, setCreator] = useState("");
   const [fileUrl, setFileUrl] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
+  const [mintList, setMintList] = useState<string[]>([]);
 
   const handleCreatorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCreator(event.target.value);
   };
 
   const handleButtonClick = async () => {
-    setIsLoading(true); // Set loading state to true
+    setIsLoading(true);
     const helius = new Helius("e6b85a35-8829-4016-ac2f-90755018d1b6");
     const mintListResponse = await helius.getMintlist({
       query: {
@@ -23,9 +25,7 @@ const HeliusMintlist = () => {
       options: { limit: 10000 },
     });
     setResponse(mintListResponse);
-    setIsLoading(false); // Set loading state back to false
-
-    // Create a file and save it to a URL
+    setIsLoading(false);
     const fileContent = JSON.stringify(
       mintListResponse.result.map((item) => item.mint)
     );
@@ -34,8 +34,8 @@ const HeliusMintlist = () => {
     });
     const url = URL.createObjectURL(file);
     setFileUrl(url);
+    setMintList(mintListResponse.result.map((item) => item.mint));
 
-    // Schedule file deletion after 10 minutes
     setTimeout(() => {
       URL.revokeObjectURL(url);
       setFileUrl(undefined);
@@ -50,6 +50,10 @@ const HeliusMintlist = () => {
     };
   }, [fileUrl]);
 
+  const handleListUpdate = (updatedList: string[]) => {
+    setMintList(updatedList);
+  };
+
   return (
     <div className="max-w-5xl px-2 pb-4 mx-4">
       <div className="flex flex-col mb-4 text-gray-600">
@@ -58,52 +62,62 @@ const HeliusMintlist = () => {
         </label>
         <div className="flex flex-row h-12">
           <input
-            className=" w-3/4 h-auto py-2 px-4 border-2 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-3/5 h-auto py-2 px-4 border-2 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
             placeholder="Creator Address.."
             type="text"
             id="creator"
             value={creator}
             onChange={handleCreatorChange}
           />
-          <div className="rounded-xl w-1/4 ml-2 mx-auto wavy-button bg-gradient-to-r p-[3px] from-[#6EE7B7] to-[#3B82F6]">
+          <div className="flex flex-grow w-12/5 rounded-xl ml-2 mx-auto bg-gradient-to-r p-[3px] from-[#6EE7B7] to-[#3B82F6]">
             <button
-              className="w-full h-auto bg-slate-100 px-4 py-2 border  text-slate-800 font-medium rounded-lg hover:bg-blue-100 focus:outline-none"
+              className="w-full h-auto bg-slate-100 px-4 py-2 border  text-slate-800 font-medium rounded-lg hover:bg-blue-100 focus:outline-none flex items-center justify-center"
               onClick={handleButtonClick}
               disabled={isLoading}
             >
-              {isLoading ? "Loading..." : "Get Collection Mintlist"}
+              {isLoading ? (
+                <div className="flex items-center justify-center">
+                  <div className="w-6 h-6 border-2 border-b-0 border-gray-400 rounded-full animate-spin"></div>
+                  <span className="ml-3">Loading...</span>
+                </div>
+              ) : (
+                "Generate Mintlist"
+              )}
             </button>
           </div>
         </div>
       </div>
-      {response ? (
-        <div className="h-96 bg-slate-50 p-3 rounded-xl overflow-y-auto mb-4">
-          <p className="pb-2 text-lg border-b border-blue-200 font-bold mb-2">
-            Total Items: {response.result.length}
-          </p>
-          <ul>
-            {response.result.map((item) => (
-              <li key={item.mint} className="py-2">
-                {item.mint}
-              </li>
-            ))}
-          </ul>
+
+      {isLoading && (
+        <div className="flex items-center justify-center h-96">
+          <div className="w-16 h-16 border-4 border-gray-400 rounded-full animate-spin"></div>
         </div>
-      ) : (
-        <p className="text-lg font-bold">Mint List will display here.</p>
       )}
+
+      <RemoveListings mintList={mintList} onListUpdated={handleListUpdate} />
+      <div className="flex flex-col max-h-96 overflow-y-auto">
+        {mintList.length > 0 && (
+          <div className="bg-white rounded-xl p-3">
+            <ul>
+              {mintList.map((mint) => (
+                <li key={mint}>{mint}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+      
       <a
         href={fileUrl || ""}
         download="mintlist.json"
         className={`${
           fileUrl ? "block" : "hidden"
-        } bg-slate-200 text-gray-600 font-medium text-center border border-gray-400 px-4 py-2 rounded-md hover:bg-blue-100 hover:drop-shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+        } bg-slate-100 text-gray-600 font-medium text-center border border-gray-400 px-4 py-2 rounded-md hover:bg-blue-100 hover:drop-shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
       >
         Download Mintlist
       </a>
     </div>
   );
-  
 };
 
 export default HeliusMintlist;
