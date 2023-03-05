@@ -8,7 +8,7 @@ import {
   TransactionInstruction,
   SystemProgram,
 } from "@solana/web3.js";
-import HeliusNFTs from "./HeliusNFTs";
+import HeliusNFTs from "../nfts/HeliusNFTs";
 
 const AirdropTokens = ({
   recipientAddresses,

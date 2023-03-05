@@ -2,8 +2,8 @@ import React from "react";
 import Link from "next/link";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import FetchTokens from "../components/FetchTokens";
-import WalletButton from "../components/FindAllByOwner";
-import HeliusMintlist from "../components/HeliusMintlist";
+import WalletButton from "../components/nfts/FindAllByOwner";
+import HeliusMintlist from "../components/mintlist/HeliusMintlist";
 
 const tokens = () => {
   return (

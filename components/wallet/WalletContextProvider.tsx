@@ -7,7 +7,7 @@ import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import {
   SolflareWalletAdapter,
 } from "@solana/wallet-adapter-wallets";
-import { SOLANA_RPC } from "../utils/constants";
+import { SOLANA_RPC } from "../../utils/constants";
 require("@solana/wallet-adapter-react-ui/styles.css");
 
 const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
