@@ -5,7 +5,6 @@ import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import FetchTokens from "../components/FetchTokens";
 import WalletButton from "../components/nfts/FindAllByOwner";
 import HeliusMintlist from "../components/mintlist/HeliusMintlist";
-import AirdropSol from "../components/airdrop/AirdropSol";
 
 const tokens = () => {
   const [recipientAddresses, setRecipientAddresses] = useState<string[]>([]);
@@ -26,7 +25,6 @@ const tokens = () => {
       <div>
         <WalletButton />
         <HeliusMintlist />
-        {/* <AirdropSol recipientAddresses={recipientAddresses} /> */}
       </div>
     </div>
   );

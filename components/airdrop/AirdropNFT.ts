@@ -115,8 +115,7 @@ const AirdropNFT = ({
   function generateTransactions(
     batchSize: number,
     dropList: Drop[],
-    fromWallet: PublicKey,
-    mint: PublicKey
+    fromWallet: PublicKey
   ): Transaction[] {
     let result: Transaction[] = [];
     // let ix3: TransactionInstruction[] = dropList.map((drop) => {
@@ -190,15 +189,14 @@ const AirdropNFT = ({
     if (!publicKey) {
       return;
     }
-    const dropList: Drop[] = {
-      // walletAddress: holdersAta,
+    const dropList: Drop = {
+      walletAddress: holders,
       numLamports: 1,
     };
     const transactionList = generateTransactions(
       NUM_DROPS_PER_TX,
       dropList,
-      publicKey,
-      mintKey
+      publicKey
     );
     const txResults = await executeTransactions(
       connection,

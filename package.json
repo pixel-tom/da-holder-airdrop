@@ -28,6 +28,7 @@
         "react-select": "^5.7.0",
         "react-spinners": "^0.13.8",
         "react-tabs": "^6.0.0",
+        "react-toastify": "^9.1.1",
         "tabs": "^0.2.0"
     },
     "devDependencies": {
