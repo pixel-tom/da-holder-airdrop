@@ -17,8 +17,20 @@ const AirdropTest = ({
 }) => {
   const connection = new Connection("https://api.devnet.solana.com");
   const { publicKey, signTransaction } = useWallet();
-  let mintKey = new PublicKey("put your input");
-  let holders = recipientAddresses;
+  let mintKey = new PublicKey("tczSo8dpqjmo331gmLsWbGAgCRJZnmK4u6QJ4agzJqU");
+
+  let testMintKey = new PublicKey(
+    "tczSo8dpqjmo331gmLsWbGAgCRJZnmK4u6QJ4agzJqU"
+  );
+
+  let testHolders = [
+    "7LqBQnMxcyZyzNwgA75cBm6TA7TsALbSKJpVZtGiyhEG",
+    "EJ9vJt8pr4RKptxCxb1TrdbFjFzbTdkx3hpqvs3a2NDL",
+    "8uToe5ptfG8VcQjAbr3FFkPmtRysiUv8ABcbpxyDnfYt",
+  ];
+
+  //when not testing return value back to <recipientAddresses> below
+  let holders = testHolders;
 
   const airdrop = async () => {
     const { publicKey, signTransaction } = useWallet();
@@ -32,7 +44,7 @@ const AirdropTest = ({
     }
     const tx = new Transaction();
 
-    for (var i = 0; i < holders.length; i++) {
+    for (let i = 0; i < holders.length; i++) {
       const fromTokenAccount = await getAssociatedTokenAddress(
         mintKey,
         publicKey
@@ -69,6 +81,7 @@ const AirdropTest = ({
           1
         )
       );
+      console.log(destTokenAccount.toString());
 
       tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
       tx.feePayer = publicKey;
@@ -77,6 +90,7 @@ const AirdropTest = ({
 
       try {
         if (!signTransaction) {
+          console.log("Error! Possibly undefined signTransaction!");
           return;
         }
         signed = await signTransaction(tx);

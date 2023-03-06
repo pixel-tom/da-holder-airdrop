@@ -10,6 +10,7 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import HeliusMintlist from "../components/mintlist/HeliusMintlist";
 import AirdropNFT from "../components/airdrop/AirdropNFT";
+import AirdropTest from "../components/airdrop/AirdropTest";
 
 interface Props {
   setOwnerAccounts: React.Dispatch<React.SetStateAction<string[]>>;
@@ -80,7 +81,8 @@ const Home: React.FC<Props> = ({ setOwnerAccounts }) => {
                         setOwnerAccounts={setOwnerAccounts}
                         updateRecipientAddresses={updateRecipientAddresses}
                       />
-                      <AirdropNFT recipientAddresses={recipientAddresses} />
+                      <AirdropTest recipientAddresses={recipientAddresses} />
+                      {/* <AirdropNFT recipientAddresses={recipientAddresses} /> */}
                     </div>
                   </TabPanel>
 
