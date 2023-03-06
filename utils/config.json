@@ -1,0 +1,6 @@
+{
+  "NFT_PER_DROP": 1,
+  "DROP_NAME": "Drop Name Identifier # XX",
+  "NUM_DROP_PER_TX": 16,
+  "TX_INTERVAL": 3333
+}
