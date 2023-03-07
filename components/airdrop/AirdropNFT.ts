@@ -1,3 +1,4 @@
+// /* eslint-disable react-hooks/rules-of-hooks */
 // import React from "react";
 // import {
 //   Connection,
@@ -209,3 +210,5 @@
 // 
 // export default AirdropNFT;
 // 
+
+export {}
