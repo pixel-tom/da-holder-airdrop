@@ -118,7 +118,7 @@ const HoldersList = ({
               <div className="mb-4">
                 <label
                   htmlFor="collectionAddress"
-                  className="block text-gray-700 font-medium mb-2"
+                  className="block text-gray-200 font-medium mb-2"
                 >
                   Collection ID
                 </label>
@@ -127,7 +127,7 @@ const HoldersList = ({
                   type="text"
                   value={collectionAddress}
                   onChange={(e) => setCollectionAddress(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:border-blue-500"
+                  className="w-full h-auto py-2 px-4 bg-gray-700 rounded-md border border-gray-500 focus:outline-none focus:ring-2 focus:ring-green-400"
                   placeholder="Enter collection ID"
                   required
                 />
@@ -136,7 +136,7 @@ const HoldersList = ({
               <div className="rounded-xl mx-auto bg-gradient-to-r p-[3px] from-[#6EE7B7] to-[#3B82F6]">
                 <button
                   type="submit"
-                  className="w-full px-4 py-2  bg-slate-100 text-gray-600 rounded-lg shadow-lg font-medium hover: focus:outline-none focus: disabled:opacity-50"
+                  className="w-full px-4 py-2  bg-slate-600 text-gray-300 rounded-lg shadow-lg font-medium hover: focus:outline-none focus: disabled:opacity-50"
                   disabled={loading}
                 >
                   {loading ? "Loading..." : "Generate Holder Snapshot"}

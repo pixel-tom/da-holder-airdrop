@@ -15,7 +15,7 @@ const RemoveListings = ({
 
   const handleClick = async () => {
     try {
-      setIsLoading(true); // set isLoading to true
+      setIsLoading(true);
       const updatedMints: string[] = [];
       const numRequests = Math.ceil(mintList.length / 1000);
       for (let i = 0; i < numRequests; i++) {
@@ -32,13 +32,13 @@ const RemoveListings = ({
         );
         updatedMints.push(...updatedMintsBatch);
       }
-      onListUpdated(updatedMints); // update the list in HeliusMintlist.tsx
-      setResponse(JSON.stringify(updatedMints, null, 2)); // set response to the updated mints list
-      console.log(updatedMints); // log the updated mints list
+      onListUpdated(updatedMints);
+      setResponse(JSON.stringify(updatedMints, null, 2));
+      console.log(updatedMints);
     } catch (error: any) {
       setResponse(`Error: ${error.message}`);
     } finally {
-      setIsLoading(false); // set isLoading back to false
+      setIsLoading(false);
     }
   };
 
@@ -49,7 +49,7 @@ const RemoveListings = ({
         <button
           className="flex justify-center px-4 py-2 w-full text-gray-200 border border-red-400 font-medium rounded-md bg-slate-600 hover:bg-red-400 hover:drop-shadow"
           onClick={handleClick}
-          disabled={isLoading} // disable the button while isLoading is true
+          disabled={isLoading}
         >
           <div className="pt-1 pr-2">
             <svg
@@ -66,7 +66,7 @@ const RemoveListings = ({
           </div>
           <div>
             {isLoading ? (
-              <i className="fa fa-spinner fa-spin"></i> // render a spinner if isLoading is true
+              <i className="fa fa-spinner fa-spin"></i>
             ) : (
               "Remove Listed NFTs"
             )}

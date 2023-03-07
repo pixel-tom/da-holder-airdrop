@@ -14,6 +14,8 @@ const HeliusMintlist = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [mintList, setMintList] = useState<string[]>([]);
   const [showSnapshot, setShowSnapshot] = useState(false);
+  const [isGenerateClicked, setIsGenerateClicked] = useState(false);
+  const [recipientAddresses, setRecipientAddresses] = useState<string[]>([]);
 
   const updateMintList = (mintListResponse: MintlistResponse) => {
     const fileContent = JSON.stringify(
@@ -39,15 +41,8 @@ const HeliusMintlist = () => {
     setResponse(mintListResponse);
     setIsLoading(false);
     updateMintList(mintListResponse);
+    setIsGenerateClicked(true);
   };
-
-  useEffect(() => {
-    return () => {
-      if (fileUrl) {
-        URL.revokeObjectURL(fileUrl);
-      }
-    };
-  }, [fileUrl]);
 
   const handleListUpdate = (updatedList: string[]) => {
     setMintList(updatedList);
@@ -57,32 +52,69 @@ const HeliusMintlist = () => {
     setShowSnapshot(true);
   };
 
+  const handlePreviousClick = () => {
+    setShowSnapshot(false);
+  };
+
+  const updateRecipientAddresses = (newAddresses: string[]) => {
+    setRecipientAddresses(newAddresses);
+  };
+
   return (
     <div className="max-w-5xl px-2 pb-4 mx-4">
-      <CreatorInput handleButtonClick={handleButtonClick} isLoading={isLoading} />
-      {isLoading ? (
-        <div className="flex items-center justify-center h-96">
-          <div className="w-16 h-16 border-4 border-gray-400 rounded-full animate-spin"></div>
-        </div>
+      {!showSnapshot ? (
+        <>
+          <CreatorInput
+            handleButtonClick={handleButtonClick}
+            isLoading={isLoading}
+          />
+          {isLoading ? (
+            <div className="flex items-center justify-center h-96">
+              <div className="w-16 h-16 border-4 border-gray-400 rounded-full animate-spin"></div>
+            </div>
+          ) : (
+            <>
+              {isGenerateClicked && (
+                <>
+                  <MintList mintList={mintList} />
+                  <div className="flex flex-row items-center justify-between mt-3">
+                    <div className="w-full">
+                      <RemoveListings
+                        mintList={mintList}
+                        onListUpdated={handleListUpdate}
+                      />
+                    </div>
+                    <div className="w-3/5 ml-2">
+                      <DownloadMintlist fileUrl={fileUrl} />
+                    </div>
+                  </div>
+                </>
+              )}
+              <div className="flex flex-col w-full mt-8">
+                <button
+                  className="flex ml-auto py-2 px-4 rounded-md text-gray-200 bg-slate-600"
+                  onClick={handleNextClick}
+                >
+                  <p>Next</p>
+                </button>
+              </div>
+            </>
+          )}
+        </>
       ) : (
-        <MintList mintList={mintList} />
+        <>
+          <MintListSnapshot mintList={mintList} recipientAddresses={[]} updateRecipientAddresses={updateRecipientAddresses} />
+          <div className="flex flex-row w-full mt-8">
+            <button
+              className="flex mr-auto py-2 px-4 rounded-md text-gray-200 bg-slate-600"
+              onClick={handlePreviousClick}
+            >
+              <p>Previous</p>
+            </button>
+            
+          </div>
+        </>
       )}
-      
-      <div className="flex flex-row items-center justify-between mt-3">
-        <div className="flex">
-          <RemoveListings mintList={mintList} onListUpdated={handleListUpdate} />
-          <DownloadMintlist fileUrl={fileUrl} />
-        </div>
-        
-      </div>
-      <div className="flex flex-col w-full mt-8">
-        <button className="flex ml-auto py-2 px-4 rounded-md text-gray-200 bg-slate-600" onClick={handleNextClick}>
-          <p>Next</p>
-        </button>
-      </div>
-      <div className="mt-8">
-        {showSnapshot && <MintListSnapshot mintList={mintList} />}
-      </div>
     </div>
   );
 };
