@@ -95,12 +95,46 @@ const NewFunctionality = ({ mintList, recipientAddresses }: Props) => {
         </button>
       </div>
       {isLoading ? (
-        <div className="flex items-center justify-center h-96">
-          <div className="w-16 h-16 border-4 border-gray-400 rounded-full animate-spin"></div>
+        <div className="flex flex-col items-center justify-center h-96">
+        <svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <g fill="none" fillRule="evenodd">
+            <circle cx="60" cy="60" r="44" stroke="#FFFFFF" strokeWidth="8" />
+            <circle cx="60" cy="60" r="36" stroke="#6EE7B7" strokeWidth="8" strokeLinecap="round">
+              <animate attributeName="r" from="36" to="48" dur="1s" repeatCount="indefinite" ease-in="linear" />
+              <animate attributeName="opacity" from="1" to="0" dur="1s" repeatCount="indefinite" ease-in="linear" />
+            </circle>
+            <circle cx="60" cy="60" r="28" stroke="#A7F3D0" strokeWidth="8" strokeLinecap="round">
+              <animate attributeName="r" from="28" to="40" dur="1s" repeatCount="indefinite" begin="0.1s" ease-in="linear" />
+              <animate attributeName="opacity" from="1" to="0" dur="1s" repeatCount="indefinite" begin="0.1s" ease-in="linear" />
+            </circle>
+            <circle cx="60" cy="60" r="20" stroke="#FFFFFF" strokeWidth="8" strokeLinecap="round">
+              <animate attributeName="r" from="20" to="32" dur="1s" repeatCount="indefinite" begin="0.2s" ease-in="linear" />
+              <animate attributeName="opacity" from="1" to="0" dur="1s" repeatCount="indefinite" begin="0.2s" ease-in="linear" />
+            </circle>
+            <circle cx="60" cy="60" r="14" stroke="#A7F3D0" strokeWidth="8" strokeLinecap="round">
+              <animate attributeName="r" from="14" to="20" dur="1s" repeatCount="indefinite" begin="0.3s" ease-in="linear" />
+              <animate attributeName="opacity" from="1" to="0" dur="1s" repeatCount="indefinite" begin="0.3s" ease-in="linear" />
+            </circle>
+            <circle cx="60" cy="60" r="8" stroke="#A7F3D0" strokeWidth="8" strokeLinecap="round">
+              <animate attributeName="r" from="8" to="14" dur="1s" repeatCount="indefinite" begin="0.4s" ease-in="linear" />
+              <animate attributeName="opacity" from="1" to="0" dur="1s" repeatCount="indefinite" begin="0.4s" ease-in="linear" />
+            </circle>
+          </g>
+        </svg>
+        <div className="flex flex-col mx-auto">
+          <p className="font-bold text-lg pt-5 text-gray-200">
+            Generating Holder Snapshot...
+          </p>
+          <p className="font-bold text-lg pt-3 mx-auto text-gray-400">
+            This may take a few minutes.
+          </p>
         </div>
+      </div>
+      
+      
       ) : showData ? (
         <div>
-          <div className="p-3 w-full max-h-96 overflow-y-auto bg-gray-500 text-gray-200 rounded-l-xl mt-4">
+          <div className="p-3 w-full max-h-96 overflow-y-auto bg-gray-600 text-gray-200 rounded-l-xl mt-4">
             <ul>
               {programAccounts.map((account) => (
                 <li key={account}>{account}</li>

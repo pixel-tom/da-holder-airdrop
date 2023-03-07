@@ -56,18 +56,28 @@ const Home: React.FC<Props> = ({ setOwnerAccounts }) => {
             <div className="flex items-center justify-center mx-auto xs:w-full sm:w-5/6 md:w-3/4 lg:w-3/5 xl:w-  2xl:w-1/2">
               <div className="bg-gradient-to-bl from-slate-600 to-slate-800 rounded-lg shadow-2xl px-4 py-4 w-full">
                 <Tabs>
-                  <TabList className="grid grid-cols-3 gap-2 bg-slate-50 bg-opacity-30 rounded-t-lg mb-8 overflow-hidden w-full">
-                    <Tab className="flex items-center justify-center text-lg font-medium text-gray-200 py-4 transition duration-300 ease-in-out hover:bg-gray-100 focus:bg-gray-100 focus:outline-none border-b-2 border-transparent hover:border-gray-300 focus:border-gray-300">
-                      <span className="mx-2">Holder Snapshot</span>
-                      <div className="w-3 h-3 rounded-full ml-1 animate-pulse bg-green-300 hidden md:block"></div>
+                  <TabList className="flex mb-8">
+                    <Tab
+                      className="flex justify-center bg-gray-800 w-full text-gray-300 py-4 px-4 rounded-l-lg hover:text-gray-200 hover:bg-gray-700 focus:text-gray-200 focus:bg-gray-700"
+                      selectedClassName="bg-gray-900 text-gray-200 font-semibold"
+                    >
+                      Holder Snapshot
+                      <div className="w-3 h-3 rounded-full my-auto ml-2 animate-pulse bg-green-400 hidden md:block"></div>
                     </Tab>
-                    <Tab className="flex items-center justify-center text-lg font-medium text-gray-200 py-4 transition duration-300 ease-in-out hover:bg-gray-100 focus:bg-gray-100 focus:outline-none border-b-2 border-transparent hover:border-gray-300 focus:border-gray-300">
-                      <span className="mx-2">Collection Mint List</span>
-                      <div className="w-3 h-3 rounded-full ml-1 animate-pulse bg-green-300 hidden md:block"></div>
+                    <Tab
+                      className="flex justify-center bg-gray-800 w-full text-gray-300 py-4 px-4 hover:text-gray-200 hover:bg-gray-700 focus:text-gray-200 focus:bg-gray-700 "
+                      selectedClassName="bg-gray-900 text-gray-200 font-semibold"
+                    >
+                      Collection Mint List
+                      <div className="w-3 h-3 rounded-full my-auto ml-2 animate-pulse bg-green-400 hidden md:block"></div>
                     </Tab>
-                    <Tab className="disabled:stroke-none flex items-center justify-center text-lg font-medium text-gray-200 py-4 transition duration-300 ease-in-out hover:bg-gray-100 focus:bg-gray-100 focus:outline-none border-b-2 border-transparent hover:border-gray-300 focus:border-gray-300">
-                      <span className="mx-2">Rarity Mint List</span>
-                      <div className="w-3 h-3 rounded-full ml-1 bg-red-400 hidden md:block"></div>
+                    <Tab
+                      className="flex justify-center bg-gray-800 w-full text-gray-300 py-4 px-4 rounded-r-lg hover:text-gray-200 hover:bg-gray-700 focus:text-gray-200 focus:bg-gray-700  cursor-not-allowed"
+                      selectedClassName="bg-gray-900 text-gray-200 font-semibold border-t-2 border-r-2 border-l-2 border-gray-500"
+                      disabled
+                    >
+                      Rarity Mint List
+                      <div className="w-3 h-3 rounded-full my-auto ml-2 bg-red-500 hidden md:block"></div>
                     </Tab>
                   </TabList>
 

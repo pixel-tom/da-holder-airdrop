@@ -69,8 +69,161 @@ const HeliusMintlist = () => {
             isLoading={isLoading}
           />
           {isLoading ? (
-            <div className="flex items-center justify-center h-96">
-              <div className="w-16 h-16 border-4 border-gray-400 rounded-full animate-spin"></div>
+            <div className="flex flex-col items-center justify-center h-96">
+              <svg
+                width="120"
+                height="120"
+                viewBox="0 0 120 120"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g fill="none" fillRule="evenodd">
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="44"
+                    stroke="#FFFFFF"
+                    strokeWidth="8"
+                  />
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="36"
+                    stroke="#6EE7B7"
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                  >
+                    <animate
+                      attributeName="r"
+                      from="36"
+                      to="48"
+                      dur="1s"
+                      repeatCount="indefinite"
+                      ease-in="linear"
+                    />
+                    <animate
+                      attributeName="opacity"
+                      from="1"
+                      to="0"
+                      dur="1s"
+                      repeatCount="indefinite"
+                      ease-in="linear"
+                    />
+                  </circle>
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="28"
+                    stroke="#A7F3D0"
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                  >
+                    <animate
+                      attributeName="r"
+                      from="28"
+                      to="40"
+                      dur="1s"
+                      repeatCount="indefinite"
+                      begin="0.1s"
+                      ease-in="linear"
+                    />
+                    <animate
+                      attributeName="opacity"
+                      from="1"
+                      to="0"
+                      dur="1s"
+                      repeatCount="indefinite"
+                      begin="0.1s"
+                      ease-in="linear"
+                    />
+                  </circle>
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="20"
+                    stroke="#FFFFFF"
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                  >
+                    <animate
+                      attributeName="r"
+                      from="20"
+                      to="32"
+                      dur="1s"
+                      repeatCount="indefinite"
+                      begin="0.2s"
+                      ease-in="linear"
+                    />
+                    <animate
+                      attributeName="opacity"
+                      from="1"
+                      to="0"
+                      dur="1s"
+                      repeatCount="indefinite"
+                      begin="0.2s"
+                      ease-in="linear"
+                    />
+                  </circle>
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="14"
+                    stroke="#A7F3D0"
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                  >
+                    <animate
+                      attributeName="r"
+                      from="14"
+                      to="20"
+                      dur="1s"
+                      repeatCount="indefinite"
+                      begin="0.3s"
+                      ease-in="linear"
+                    />
+                    <animate
+                      attributeName="opacity"
+                      from="1"
+                      to="0"
+                      dur="1s"
+                      repeatCount="indefinite"
+                      begin="0.3s"
+                      ease-in="linear"
+                    />
+                  </circle>
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="8"
+                    stroke="#A7F3D0"
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                  >
+                    <animate
+                      attributeName="r"
+                      from="8"
+                      to="14"
+                      dur="1s"
+                      repeatCount="indefinite"
+                      begin="0.4s"
+                      ease-in="linear"
+                    />
+                    <animate
+                      attributeName="opacity"
+                      from="1"
+                      to="0"
+                      dur="1s"
+                      repeatCount="indefinite"
+                      begin="0.4s"
+                      ease-in="linear"
+                    />
+                  </circle>
+                </g>
+              </svg>
+              <div className="flex flex-col mx-auto">
+                <p className="font-bold text-lg text-gray-200">
+                  Generating Mint List...
+                </p>
+              </div>
             </div>
           ) : (
             <>
@@ -96,6 +249,21 @@ const HeliusMintlist = () => {
                   onClick={handleNextClick}
                 >
                   <p>Next</p>
+                  <div className="my-auto pl-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      className="bi bi-arrow-right"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"
+                      />
+                    </svg>
+                  </div>
                 </button>
               </div>
             </>
@@ -103,7 +271,11 @@ const HeliusMintlist = () => {
         </>
       ) : (
         <>
-          <MintListSnapshot mintList={mintList} recipientAddresses={[]} updateRecipientAddresses={updateRecipientAddresses} />
+          <MintListSnapshot
+            mintList={mintList}
+            recipientAddresses={[]}
+            updateRecipientAddresses={updateRecipientAddresses}
+          />
           <div className="flex flex-row w-full mt-8">
             <button
               className="flex mr-auto py-2 px-4 rounded-md text-gray-200 bg-slate-600"
@@ -111,7 +283,6 @@ const HeliusMintlist = () => {
             >
               <p>Previous</p>
             </button>
-            
           </div>
         </>
       )}
