@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-import React from "react";
+import React, { useEffect } from "react";
 import {
   createAssociatedTokenAccountInstruction,
   getAssociatedTokenAddress,
@@ -18,34 +17,23 @@ const AirdropTest = ({
 }) => {
   const connection = new Connection("https://api.devnet.solana.com");
   const { publicKey, signTransaction } = useWallet();
-  let mintKey = new PublicKey("tczSo8dpqjmo331gmLsWbGAgCRJZnmK4u6QJ4agzJqU");
+  let mintKey = new PublicKey("25o1vxRGd9ZdB3Qy7GVWdnDYogRcAhpBx7Ui9iyryD8a");
 
   let testMintKey = new PublicKey(
     "tczSo8dpqjmo331gmLsWbGAgCRJZnmK4u6QJ4agzJqU"
   );
 
-  let testHolders = [
-    "7LqBQnMxcyZyzNwgA75cBm6TA7TsALbSKJpVZtGiyhEG",
-    "EJ9vJt8pr4RKptxCxb1TrdbFjFzbTdkx3hpqvs3a2NDL",
-    "8uToe5ptfG8VcQjAbr3FFkPmtRysiUv8ABcbpxyDnfYt",
-  ];
+  let testHolders = ["HkTFX8Vk22ZcMN2G5MK5g4jbnLVZ41f77qTYXtcjYG3X"];
 
   //when not testing return value back to <recipientAddresses> below
   let holders = testHolders;
 
-  const airdrop = async () => {
-    const { publicKey, signTransaction } = useWallet();
-    const wallet = useWallet();
-    if (!wallet) {
+  const handleAirdrop = async () => {
+    if (!publicKey || !signTransaction) { // added signTransaction since it was not being used
       return;
     }
 
-    if (!publicKey) {
-      return;
-    }
-    const tx = new Transaction();
-
-    for (let i = 0; i < holders.length; i++) {
+    for (let i = 0; i < holders.length; i++) { // removed useWallet calls moved to top of function
       const fromTokenAccount = await getAssociatedTokenAddress(
         mintKey,
         publicKey
@@ -62,6 +50,7 @@ const AirdropTest = ({
         `sending ${mintKey.toBase58()} to ${destPublicKey.toBase58()}`
       );
 
+      const tx = new Transaction(); // defined new Transaction
       if (receiverAccount === null) {
         tx.add(
           createAssociatedTokenAccountInstruction(
@@ -94,16 +83,10 @@ const AirdropTest = ({
           console.log("Error! Possibly undefined signTransaction!");
           return;
         }
-        signed = await signTransaction(tx);
-      } catch (e: any) {
-        toast(e.message);
-        return;
-      }
-
-      let signature: string | undefined = undefined;
-
-      try {
-        signature = await connection.sendRawTransaction(signed.serialize());
+        const signed = await signTransaction(tx); // defined signed
+        const signature = await connection.sendRawTransaction( // defined signature
+          signed.serialize()
+        );
         await connection.confirmTransaction(signature, "confirmed");
 
         toast.success("Transaction successful");
@@ -111,11 +94,16 @@ const AirdropTest = ({
         toast.error(e.message);
       }
     }
-  }; // end of owners for loop
+  };
+  // end of owners for loop
 
-  airdrop();
-
-  return <div>AirdropTest</div>;
+  // added a button to run the function
+  return (
+    <div>
+      <button onClick={handleAirdrop}>Run Airdrop</button> 
+      <div>AirdropTest</div>
+    </div>
+  );
 };
 
 export default AirdropTest;
