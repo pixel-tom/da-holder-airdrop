@@ -26,7 +26,7 @@ const AirdropTest = ({
     "tczSo8dpqjmo331gmLsWbGAgCRJZnmK4u6QJ4agzJqU"
   );
 
-  let testHolders = ["HkTFX8Vk22ZcMN2G5MK5g4jbnLVZ41f77qTYXtcjYG3X"];
+  let testHolders = ["HkTFX8Vk22ZcMN2G5MK5g4jbnLVZ41f77qTYXtcjYG3X", "DWWbMxqKXc5Ban4maY2SokzvcQUTZp4UWM2GPWF1fb9E"];
 
   // when not testing return value back to <recipientAddresses> below
   let holders = testHolders;
@@ -36,44 +36,43 @@ const AirdropTest = ({
       return;
     }
   
+    const shuffledMintKeys = mintKeys.sort(() => Math.random() - 0.5);
+  
     const tx = new Transaction();
   
-    for (let i = 0; i < mintKeys.length; i++) {
-      const mintKey = mintKeys[i];
+    for (let i = 0; i < holders.length && i < shuffledMintKeys.length; i++) {
+      const holder = holders[i];
+      const mintKey = shuffledMintKeys[i];
+      const destPublicKey = new PublicKey(holder);
+      const destTokenAccount = await getAssociatedTokenAddress(
+        mintKey,
+        destPublicKey
+      );
+      const receiverAccount = await connection.getAccountInfo(destTokenAccount);
   
-      for (let j = 0; j < holders.length; j++) {
-        const holder = holders[j];
-        const destPublicKey = new PublicKey(holder);
-        const destTokenAccount = await getAssociatedTokenAddress(
-          mintKey,
-          destPublicKey
-        );
-        const receiverAccount = await connection.getAccountInfo(destTokenAccount);
+      console.log(
+        `sending ${mintKey.toBase58()} to ${destPublicKey.toBase58()}`
+      );
   
-        console.log(
-          `sending ${mintKey.toBase58()} to ${destPublicKey.toBase58()}`
-        );
+      const fromTokenAccount = await getAssociatedTokenAddress(mintKey, publicKey);
+      const fromPublicKey = publicKey;
   
-        const fromTokenAccount = await getAssociatedTokenAddress(mintKey, publicKey);
-        const fromPublicKey = publicKey;
-  
-        if (receiverAccount === null) {
-          tx.add(
-            createAssociatedTokenAccountInstruction(
-              fromPublicKey,
-              destTokenAccount,
-              destPublicKey,
-              mintKey,
-              TOKEN_PROGRAM_ID,
-              ASSOCIATED_TOKEN_PROGRAM_ID
-            )
-          );
-        }
-  
+      if (receiverAccount === null) {
         tx.add(
-          createTransferInstruction(fromTokenAccount, destTokenAccount, fromPublicKey, 1)
+          createAssociatedTokenAccountInstruction(
+            fromPublicKey,
+            destTokenAccount,
+            destPublicKey,
+            mintKey,
+            TOKEN_PROGRAM_ID,
+            ASSOCIATED_TOKEN_PROGRAM_ID
+          )
         );
       }
+  
+      tx.add(
+        createTransferInstruction(fromTokenAccount, destTokenAccount, fromPublicKey, 1)
+      );
     }
   
     tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
@@ -88,8 +87,7 @@ const AirdropTest = ({
     } catch (e: any) {
       toast.error(e.message);
     }
-  };
-   // end of owners for loop
+  };  // end of owners for loop
 
   return (
     <div>
