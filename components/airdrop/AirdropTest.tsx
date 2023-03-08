@@ -17,7 +17,10 @@ const AirdropTest = ({
 }) => {
   const connection = new Connection("https://api.devnet.solana.com");
   const { publicKey, signTransaction } = useWallet();
-  let mintKey = new PublicKey("25o1vxRGd9ZdB3Qy7GVWdnDYogRcAhpBx7Ui9iyryD8a");
+  const mintKeys = [
+    new PublicKey("4XDirEKVBVAFvTCMXjoiH4sURDzLyvxYs2tL9jkNdHEL"),
+    new PublicKey("AMW5AYYKbbpcnweH4e2SJARiWrGCeMKdPsJieUeC3Mco"),
+  ];
 
   let testMintKey = new PublicKey(
     "tczSo8dpqjmo331gmLsWbGAgCRJZnmK4u6QJ4agzJqU"
@@ -25,79 +28,69 @@ const AirdropTest = ({
 
   let testHolders = ["HkTFX8Vk22ZcMN2G5MK5g4jbnLVZ41f77qTYXtcjYG3X"];
 
-  //when not testing return value back to <recipientAddresses> below
+  // when not testing return value back to <recipientAddresses> below
   let holders = testHolders;
 
   const handleAirdrop = async () => {
-    if (!publicKey || !signTransaction) { // added signTransaction since it was not being used
+    if (!publicKey || !signTransaction) {
       return;
     }
-
-    for (let i = 0; i < holders.length; i++) { // removed useWallet calls moved to top of function
-      const fromTokenAccount = await getAssociatedTokenAddress(
-        mintKey,
-        publicKey
-      );
-      const fromPublicKey = publicKey;
-      const destPublicKey = new PublicKey(holders[i]);
-      const destTokenAccount = await getAssociatedTokenAddress(
-        mintKey,
-        destPublicKey
-      );
-      const receiverAccount = await connection.getAccountInfo(destTokenAccount);
-
-      console.log(
-        `sending ${mintKey.toBase58()} to ${destPublicKey.toBase58()}`
-      );
-
-      const tx = new Transaction(); // defined new Transaction
-      if (receiverAccount === null) {
-        tx.add(
-          createAssociatedTokenAccountInstruction(
-            fromPublicKey,
-            destTokenAccount,
-            destPublicKey,
-            mintKey,
-            TOKEN_PROGRAM_ID,
-            ASSOCIATED_TOKEN_PROGRAM_ID
-          )
+  
+    const tx = new Transaction();
+  
+    for (let i = 0; i < mintKeys.length; i++) {
+      const mintKey = mintKeys[i];
+  
+      for (let j = 0; j < holders.length; j++) {
+        const holder = holders[j];
+        const destPublicKey = new PublicKey(holder);
+        const destTokenAccount = await getAssociatedTokenAddress(
+          mintKey,
+          destPublicKey
         );
-      }
-      tx.add(
-        createTransferInstruction(
-          fromTokenAccount,
-          destTokenAccount,
-          fromPublicKey,
-          1
-        )
-      );
-      console.log(destTokenAccount.toString());
-
-      tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-      tx.feePayer = publicKey;
-
-      let signed: Transaction | undefined = undefined;
-
-      try {
-        if (!signTransaction) {
-          console.log("Error! Possibly undefined signTransaction!");
-          return;
+        const receiverAccount = await connection.getAccountInfo(destTokenAccount);
+  
+        console.log(
+          `sending ${mintKey.toBase58()} to ${destPublicKey.toBase58()}`
+        );
+  
+        const fromTokenAccount = await getAssociatedTokenAddress(mintKey, publicKey);
+        const fromPublicKey = publicKey;
+  
+        if (receiverAccount === null) {
+          tx.add(
+            createAssociatedTokenAccountInstruction(
+              fromPublicKey,
+              destTokenAccount,
+              destPublicKey,
+              mintKey,
+              TOKEN_PROGRAM_ID,
+              ASSOCIATED_TOKEN_PROGRAM_ID
+            )
+          );
         }
-        const signed = await signTransaction(tx); // defined signed
-        const signature = await connection.sendRawTransaction( // defined signature
-          signed.serialize()
+  
+        tx.add(
+          createTransferInstruction(fromTokenAccount, destTokenAccount, fromPublicKey, 1)
         );
-        await connection.confirmTransaction(signature, "confirmed");
-
-        toast.success("Transaction successful");
-      } catch (e: any) {
-        toast.error(e.message);
       }
     }
+  
+    tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+    tx.feePayer = publicKey;
+  
+    try {
+      const signed = await signTransaction(tx);
+      const signature = await connection.sendRawTransaction(signed.serialize());
+      await connection.confirmTransaction(signature, "confirmed");
+  
+      toast.success("Transaction successful");
+    } catch (e: any) {
+      toast.error(e.message);
+    }
   };
-  // end of owners for loop
+   // end of owners for loop
 
-  // added a button to run the function
   return (
     <div>
       <button onClick={handleAirdrop}>Run Airdrop</button> 

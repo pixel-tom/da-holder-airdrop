@@ -112,7 +112,7 @@ const Home: React.FC<Props> = ({ setOwnerAccounts }) => {
         )}
       </main>
       <footer className=" fixed bottom-0 w-full px-4 py-2 border-t border-gray-300 bg-slate-800">
-        <AirdropTokens recipientAddresses={recipientAddresses} />
+        
       </footer>
     </div>
   );
