@@ -55,8 +55,9 @@ export const NftsByOwner = () => {
   const { publicKey } = useWallet();
   const [nfts, setNfts] = useState<any>();
   const [mintArray, setMintArray] = useState<string[]>([]);
-  const [metadata, setMetadata] = useState<TokenMetadata[]>([]); // added metadata state
+  const [metadata, setMetadata] = useState<TokenMetadata[]>([]);
   const [selectedNfts, setSelectedNfts] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (publicKey) {
@@ -86,8 +87,29 @@ export const NftsByOwner = () => {
       mintAccounts: mintAccounts,
       includeOffChain: true,
     });
-    setMetadata((prevData: TokenMetadata[]) => [...prevData, ...data]); // update metadata state with new data
+  
+    // Create an array of promises to load all images
+    const imagePromises = data.map((token: TokenMetadata) => {
+      const offChainMetadata = token.offChainMetadata?.metadata;
+      const image = offChainMetadata?.image;
+      if (image) {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = resolve;
+          img.onerror = reject;
+          img.src = image;
+        });
+      } else {
+        return Promise.resolve();
+      }
+    });
+  
+    // Wait for all image promises to resolve before setting the loading state to false
+    await Promise.all(imagePromises);
+    setMetadata((prevData: TokenMetadata[]) => [...prevData, ...data]);
+    setLoading(false);
   };
+  
 
   useEffect(() => {
     if (mintArray?.length) {
@@ -108,40 +130,50 @@ export const NftsByOwner = () => {
         </label>
       </div>
       <div>
-        
-        {metadata && (
-          <div className="grid grid-cols-10 gap-1">
-          {metadata.map((token: TokenMetadata, index: number) => {
-            const offChainMetadata = token.offChainMetadata?.metadata;
-            const image = offChainMetadata?.image;
-            const mint = offChainMetadata?.mint;
-            const name = offChainMetadata?.name;
-            return (
-              <div key={index} className="bg-gray-100 p-4 rounded-lg">
-                {image && (
-                  <div>
-                    <img src={image} alt={name} className="mx-auto" width={200} height={200} />
+        {loading ? (
+          <div>Loading Wallet Assets...</div>
+        ) : (
+          metadata && (
+            <div className="grid grid-cols-10 gap-1">
+              {metadata.map((token: TokenMetadata, index: number) => {
+                const offChainMetadata = token.offChainMetadata?.metadata;
+                const image = offChainMetadata?.image;
+                const mint = offChainMetadata?.mint;
+                const name = offChainMetadata?.name;
+                return (
+                  <div key={index} className="bg-gray-100 p-4 rounded-lg">
+                    {image && (
+                      <div>
+                        <img
+                          src={image}
+                          alt={name}
+                          className="mx-auto"
+                          width={200}
+                          height={200}
+                          onLoad={() => setLoading(false)}
+                        />
+                      </div>
+                    )}
+                    {mint && (
+                      <div>
+                        <span className="font-bold">Mint: </span>
+                        <span>{mint}</span>
+                      </div>
+                    )}
+                    {name && (
+                      <div>
+                        <span className="font-bold">Name: </span>
+                        <span>{name}</span>
+                      </div>
+                    )}
                   </div>
-                )}
-                {mint && (
-                  <div>
-                    <span className="font-bold">Mint: </span>
-                    <span>{mint}</span>
-                  </div>
-                )}
-                {name && (
-                  <div>
-                    <span className="font-bold"></span>
-                    <span>{name}</span>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-        
+                );
+              })}
+            </div>
+          )
         )}
       </div>
     </div>
   );
+  
 };
