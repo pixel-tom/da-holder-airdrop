@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import FetchTokens from "../components/FetchTokens";
-import WalletButton from "../components/nfts/FindAllByOwner";
+import { NftsByOwner } from "../components/nfts/FindAllByOwner";
 import HeliusMintlist from "../components/mintlist/HeliusMintlist";
 import AirdropTest from "../components/airdrop/AirdropTest";
 
@@ -26,7 +26,7 @@ const tokens = () => {
         <AirdropTest recipientAddresses={[]} />
       </div>
       <div>
-        <WalletButton />
+        <NftsByOwner />
         <HeliusMintlist />
       </div>
     </div>

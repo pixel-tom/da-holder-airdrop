@@ -259,7 +259,6 @@ const HeliusNFTs: React.FC<Props> = ({
                         token.offChainMetadata.metadata.description
                       }
                       loading="lazy"
-                      
                       className="w-full h-50 object-cover transition duration-500 transform hover:scale-110"
                     />
                   </div>

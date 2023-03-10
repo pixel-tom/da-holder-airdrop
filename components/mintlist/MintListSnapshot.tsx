@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import AirdropTest from "../airdrop/AirdropTest";
 
 interface Props {
   mintList: string[];
@@ -7,8 +8,13 @@ interface Props {
   updateRecipientAddresses: (newAddresses: string[]) => void;
 }
 
-const NewFunctionality = ({ mintList, recipientAddresses }: Props) => {
+interface MintListSnapshotProps {
+  programAccounts: Array<any>; // replace `any` with the type of your program accounts
+}
+
+const NewFunctionality = ({ mintList, recipientAddresses, updateRecipientAddresses }: Props) => {
   const [programAccounts, setProgramAccounts] = useState<string[]>([]);
+  const [uniqueHolders, setUniqueHolders] = useState<string[]>([]);
   const [ownerValues, setOwnerValues] = useState<string>("");
   const [shouldRunCode, setShouldRunCode] = useState<boolean>(false);
   const [showData, setShowData] = useState<boolean>(false);
@@ -57,6 +63,11 @@ const NewFunctionality = ({ mintList, recipientAddresses }: Props) => {
     setOwnerValues(ownerString);
   }, [programAccounts]);
 
+  useEffect(() => {
+    const uniqueHolders = Array.from(new Set(programAccounts));
+    setUniqueHolders(uniqueHolders);
+  }, [programAccounts]);
+
   const handleClick = () => {
     setShouldRunCode(true);
     setProgramAccounts([]);
@@ -64,9 +75,17 @@ const NewFunctionality = ({ mintList, recipientAddresses }: Props) => {
   };
 
   const handleSendData = () => {
-    recipientAddresses.push(...programAccounts);
-    console.log("Data sent: ", programAccounts);
+    updateRecipientAddresses(programAccounts);
+    console.log("All Holders Data sent: ", programAccounts);
   };
+  
+  
+
+  const handleGetUniqueHolders = () => {
+    const uniqueHolders = Array.from(new Set(programAccounts));
+    updateRecipientAddresses(uniqueHolders);
+  };
+  
 
   useEffect(() => {
     if (programAccounts.length > 0) {
@@ -96,149 +115,6 @@ const NewFunctionality = ({ mintList, recipientAddresses }: Props) => {
       </div>
       {isLoading ? (
         <div className="flex flex-col items-center justify-center h-96">
-          <svg
-            width="120"
-            height="120"
-            viewBox="0 0 120 120"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <g fill="none" fillRule="evenodd">
-              <circle cx="60" cy="60" r="44" stroke="#FFFFFF" strokeWidth="8" />
-              <circle
-                cx="60"
-                cy="60"
-                r="36"
-                stroke="#6EE7B7"
-                strokeWidth="8"
-                strokeLinecap="round"
-              >
-                <animate
-                  attributeName="r"
-                  from="36"
-                  to="48"
-                  dur="1s"
-                  repeatCount="indefinite"
-                  ease-in="linear"
-                />
-                <animate
-                  attributeName="opacity"
-                  from="1"
-                  to="0"
-                  dur="1s"
-                  repeatCount="indefinite"
-                  ease-in="linear"
-                />
-              </circle>
-              <circle
-                cx="60"
-                cy="60"
-                r="28"
-                stroke="#A7F3D0"
-                strokeWidth="8"
-                strokeLinecap="round"
-              >
-                <animate
-                  attributeName="r"
-                  from="28"
-                  to="40"
-                  dur="1s"
-                  repeatCount="indefinite"
-                  begin="0.1s"
-                  ease-in="linear"
-                />
-                <animate
-                  attributeName="opacity"
-                  from="1"
-                  to="0"
-                  dur="1s"
-                  repeatCount="indefinite"
-                  begin="0.1s"
-                  ease-in="linear"
-                />
-              </circle>
-              <circle
-                cx="60"
-                cy="60"
-                r="20"
-                stroke="#FFFFFF"
-                strokeWidth="8"
-                strokeLinecap="round"
-              >
-                <animate
-                  attributeName="r"
-                  from="20"
-                  to="32"
-                  dur="1s"
-                  repeatCount="indefinite"
-                  begin="0.2s"
-                  ease-in="linear"
-                />
-                <animate
-                  attributeName="opacity"
-                  from="1"
-                  to="0"
-                  dur="1s"
-                  repeatCount="indefinite"
-                  begin="0.2s"
-                  ease-in="linear"
-                />
-              </circle>
-              <circle
-                cx="60"
-                cy="60"
-                r="14"
-                stroke="#A7F3D0"
-                strokeWidth="8"
-                strokeLinecap="round"
-              >
-                <animate
-                  attributeName="r"
-                  from="14"
-                  to="20"
-                  dur="1s"
-                  repeatCount="indefinite"
-                  begin="0.3s"
-                  ease-in="linear"
-                />
-                <animate
-                  attributeName="opacity"
-                  from="1"
-                  to="0"
-                  dur="1s"
-                  repeatCount="indefinite"
-                  begin="0.3s"
-                  ease-in="linear"
-                />
-              </circle>
-              <circle
-                cx="60"
-                cy="60"
-                r="8"
-                stroke="#A7F3D0"
-                strokeWidth="8"
-                strokeLinecap="round"
-              >
-                <animate
-                  attributeName="r"
-                  from="8"
-                  to="14"
-                  dur="1s"
-                  repeatCount="indefinite"
-                  begin="0.4s"
-                  ease-in="linear"
-                />
-                <animate
-                  attributeName="opacity"
-                  from="1"
-                  to="0"
-                  dur="1s"
-                  repeatCount="indefinite"
-                  begin="0.4s"
-                  ease-in="linear"
-                />
-              </circle>
-            </g>
-          </svg>
           <div className="flex flex-col mx-auto">
             <p className="font-bold text-lg pt-5 text-gray-200">
               Generating Holder Snapshot...
@@ -250,23 +126,49 @@ const NewFunctionality = ({ mintList, recipientAddresses }: Props) => {
         </div>
       ) : showData ? (
         <div>
-          <div className="p-3 w-full max-h-96 overflow-y-auto bg-gray-600 text-gray-200 rounded-l-xl mt-4">
-            <ul>
-              {programAccounts.map((account) => (
-                <li key={account}>{account}</li>
-              ))}
-            </ul>
+          <div className="mb-4">
+            <h2 className="font-bold text-md text-gray-200">
+              {programAccounts.length} holders ({uniqueHolders.length} unique)
+            </h2>
           </div>
-          <button
-            className="w-full px-4 py-2 font-medium text-gray-200 rounded-md bg-slate-600 hover:bg-slate-500 hover:drop-shadow"
-            onClick={handleSendData}
-          >
-            Send Data
-          </button>
+          <div className="flex flex-row justify-center mt-4 space-x-4">
+            <div className="p-3 w-1/2 max-h-96 overflow-y-auto bg-gray-600 text-gray-200 rounded-l-xl">
+              <h3 className="font-bold text-md text-gray-200">All Holders</h3>
+              <ul>
+                {programAccounts.map((holder) => (
+                  <li key={holder}>{holder}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="p-3 w-1/2 max-h-96 overflow-y-auto bg-gray-600 text-gray-200 rounded-r-xl">
+              <h3 className="font-bold text-md text-gray-200">Unique Holders</h3>
+              <ul>
+                {uniqueHolders.map((holder) => (
+                  <li key={holder}>{holder}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          <div className="flex justify-between items-center mt-4">
+            <button
+              className="w-full px-4 py-2 font-medium text-gray-200 rounded-md bg-slate-600 hover:bg-slate-500 hover:drop-shadow"
+              onClick={handleSendData}
+            >
+              Send Data
+            </button>
+            <button
+              className="w-full px-4 py-2 font-medium text-gray-200 rounded-md bg-slate-600 hover:bg-slate-500 hover:drop-shadow ml-2"
+              onClick={handleGetUniqueHolders}
+            >
+              Get Unique Holders
+            </button>
+          </div>
         </div>
       ) : null}
+      <AirdropTest recipientAddresses={recipientAddresses} />
     </div>
   );
+  
 };
 
 export default NewFunctionality;

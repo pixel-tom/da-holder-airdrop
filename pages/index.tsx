@@ -3,7 +3,6 @@ import Head from "next/head";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import HoldersList from "../components/getOwnerSnapshot";
-import AirdropTokens from "../components/airdrop/AirdropTokens";
 import { useState } from "react";
 import Link from "next/link";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
@@ -111,9 +110,7 @@ const Home: React.FC<Props> = ({ setOwnerAccounts }) => {
           </>
         )}
       </main>
-      <footer className=" fixed bottom-0 w-full px-4 py-2 border-t border-gray-300 bg-slate-800">
-        
-      </footer>
+      <footer className=" fixed bottom-0 w-full px-4 py-2 border-t border-gray-300 bg-slate-800"></footer>
     </div>
   );
 };

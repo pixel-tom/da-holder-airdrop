@@ -5,6 +5,7 @@ import MintListSnapshot from "./MintListSnapshot";
 import CreatorInput from "./CreatorInput";
 import MintList from "./MintList";
 import DownloadMintlist from "./DownloadMintlist";
+import AirdropTest from "../airdrop/AirdropTest";
 
 const HeliusMintlist = () => {
   const [response, setResponse] = useState<MintlistResponse | undefined>(
@@ -70,155 +71,6 @@ const HeliusMintlist = () => {
           />
           {isLoading ? (
             <div className="flex flex-col items-center justify-center h-96">
-              <svg
-                width="120"
-                height="120"
-                viewBox="0 0 120 120"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <g fill="none" fillRule="evenodd">
-                  <circle
-                    cx="60"
-                    cy="60"
-                    r="44"
-                    stroke="#FFFFFF"
-                    strokeWidth="8"
-                  />
-                  <circle
-                    cx="60"
-                    cy="60"
-                    r="36"
-                    stroke="#6EE7B7"
-                    strokeWidth="8"
-                    strokeLinecap="round"
-                  >
-                    <animate
-                      attributeName="r"
-                      from="36"
-                      to="48"
-                      dur="1s"
-                      repeatCount="indefinite"
-                      ease-in="linear"
-                    />
-                    <animate
-                      attributeName="opacity"
-                      from="1"
-                      to="0"
-                      dur="1s"
-                      repeatCount="indefinite"
-                      ease-in="linear"
-                    />
-                  </circle>
-                  <circle
-                    cx="60"
-                    cy="60"
-                    r="28"
-                    stroke="#A7F3D0"
-                    strokeWidth="8"
-                    strokeLinecap="round"
-                  >
-                    <animate
-                      attributeName="r"
-                      from="28"
-                      to="40"
-                      dur="1s"
-                      repeatCount="indefinite"
-                      begin="0.1s"
-                      ease-in="linear"
-                    />
-                    <animate
-                      attributeName="opacity"
-                      from="1"
-                      to="0"
-                      dur="1s"
-                      repeatCount="indefinite"
-                      begin="0.1s"
-                      ease-in="linear"
-                    />
-                  </circle>
-                  <circle
-                    cx="60"
-                    cy="60"
-                    r="20"
-                    stroke="#FFFFFF"
-                    strokeWidth="8"
-                    strokeLinecap="round"
-                  >
-                    <animate
-                      attributeName="r"
-                      from="20"
-                      to="32"
-                      dur="1s"
-                      repeatCount="indefinite"
-                      begin="0.2s"
-                      ease-in="linear"
-                    />
-                    <animate
-                      attributeName="opacity"
-                      from="1"
-                      to="0"
-                      dur="1s"
-                      repeatCount="indefinite"
-                      begin="0.2s"
-                      ease-in="linear"
-                    />
-                  </circle>
-                  <circle
-                    cx="60"
-                    cy="60"
-                    r="14"
-                    stroke="#A7F3D0"
-                    strokeWidth="8"
-                    strokeLinecap="round"
-                  >
-                    <animate
-                      attributeName="r"
-                      from="14"
-                      to="20"
-                      dur="1s"
-                      repeatCount="indefinite"
-                      begin="0.3s"
-                      ease-in="linear"
-                    />
-                    <animate
-                      attributeName="opacity"
-                      from="1"
-                      to="0"
-                      dur="1s"
-                      repeatCount="indefinite"
-                      begin="0.3s"
-                      ease-in="linear"
-                    />
-                  </circle>
-                  <circle
-                    cx="60"
-                    cy="60"
-                    r="8"
-                    stroke="#A7F3D0"
-                    strokeWidth="8"
-                    strokeLinecap="round"
-                  >
-                    <animate
-                      attributeName="r"
-                      from="8"
-                      to="14"
-                      dur="1s"
-                      repeatCount="indefinite"
-                      begin="0.4s"
-                      ease-in="linear"
-                    />
-                    <animate
-                      attributeName="opacity"
-                      from="1"
-                      to="0"
-                      dur="1s"
-                      repeatCount="indefinite"
-                      begin="0.4s"
-                      ease-in="linear"
-                    />
-                  </circle>
-                </g>
-              </svg>
               <div className="flex flex-col mx-auto">
                 <p className="font-bold text-lg text-gray-200">
                   Generating Mint List...
@@ -266,6 +118,9 @@ const HeliusMintlist = () => {
                   </div>
                 </button>
               </div>
+              <div className="mt-8">
+                <AirdropTest recipientAddresses={recipientAddresses} />
+              </div>
             </>
           )}
         </>
@@ -273,7 +128,7 @@ const HeliusMintlist = () => {
         <>
           <MintListSnapshot
             mintList={mintList}
-            recipientAddresses={[]}
+            recipientAddresses={recipientAddresses}
             updateRecipientAddresses={updateRecipientAddresses}
           />
           <div className="flex flex-row w-full mt-8">
@@ -288,6 +143,7 @@ const HeliusMintlist = () => {
       )}
     </div>
   );
+  
 };
 
 export default HeliusMintlist;

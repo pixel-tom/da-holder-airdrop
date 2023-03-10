@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import CollectionNames from "../components/CollectionNames";
-import AirdropTokens from "./airdrop/AirdropTokens";
+
 
 const HoldersList = ({
   setOwnerAccounts,
