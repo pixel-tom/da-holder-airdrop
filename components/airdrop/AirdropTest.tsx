@@ -153,7 +153,8 @@ const AirdropTest = ({
         </button>
       </div>
       <div className="w-full">
-        <NftsByOwner onUpdateSelectedNfts={updateMintKeys} />
+      <NftsByOwner onUpdateSelectedNfts={updateMintKeys} mintKeys={mintKeys} />
+
       </div>
     </div>
   );

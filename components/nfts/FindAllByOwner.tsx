@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { getParsedNftAccountsByOwner } from "@nfteyez/sol-rayz";
-import { Connection } from "@solana/web3.js";
+import { Connection, PublicKey } from "@solana/web3.js";
 import axios from "axios";
 import { TokenMetadata } from "./types/types";
 
 interface NftsByOwnerProps {
   onUpdateSelectedNfts: (selectedNfts: string[]) => void;
+  mintKeys: PublicKey[];
 }
 
 export const NftsByOwner = ({ onUpdateSelectedNfts }: NftsByOwnerProps) => {
@@ -22,25 +23,18 @@ export const NftsByOwner = ({ onUpdateSelectedNfts }: NftsByOwnerProps) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedNfts, setSelectedNfts] = useState<string[]>([]);
   const [selectAll, setSelectAll] = useState<boolean>(false);
+  const [mintKeys, setMintKeys] = useState<PublicKey[]>([]);
 
   useEffect(() => {
     if (publicKey) {
       getParsedNftAccountsByOwner({
         publicAddress: publicKey.toBase58(),
         connection,
-      }).then(result => {
+      }).then((result) => {
         setNfts(result);
       });
     }
   }, [publicKey]);
-
-  const fetchNfts = async () => {
-    const result = await getParsedNftAccountsByOwner({
-      publicAddress: publicKey?.toBase58() ?? "",
-      connection,
-    });
-    setNfts(result);
-  };
 
   useEffect(() => {
     if (nfts?.length) {
@@ -57,27 +51,22 @@ export const NftsByOwner = ({ onUpdateSelectedNfts }: NftsByOwnerProps) => {
       includeOffChain: true,
     });
 
-    // Create an array of promises to load all images
-    const imagePromises = data.map((token: TokenMetadata) => {
-      const offChainMetadata = token.offChainMetadata?.metadata;
-      const image = offChainMetadata?.image;
-      const symbol = offChainMetadata?.symbol;
-      if (image) {
-        return new Promise((resolve, reject) => {
-          const img = new Image();
-          img.onload = resolve;
-          img.onerror = reject;
-          img.src = image;
-        }).then(() => {
-          return { ...token, symbol };
-        });
-      } else {
-        return Promise.resolve({ ...token, symbol });
-      }
-    });
-
     // Wait for all image loading promises to resolve
-    const metadataWithSymbol = await Promise.all(imagePromises);
+    const metadataWithSymbol = await Promise.all(
+      data.map(async (token: TokenMetadata) => {
+        const offChainMetadata = token.offChainMetadata?.metadata;
+        const image = offChainMetadata?.image;
+        if (image) {
+          await new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = resolve;
+            img.onerror = reject;
+            img.src = image;
+          });
+        }
+        return { ...token, key: offChainMetadata?.mint };
+      })
+    );
     return metadataWithSymbol;
   };
 
@@ -123,7 +112,6 @@ export const NftsByOwner = ({ onUpdateSelectedNfts }: NftsByOwnerProps) => {
     setSelectedNfts(newSelectedNfts);
     onUpdateSelectedNfts(newSelectedNfts); // Pass the updated selectedNfts array to the parent component
   };
-  
 
   const handleSelectAllClick = () => {
     if (selectAll) {
@@ -138,7 +126,7 @@ export const NftsByOwner = ({ onUpdateSelectedNfts }: NftsByOwnerProps) => {
     }
     onUpdateSelectedNfts(selectedNfts); // Pass the updated selectedNfts array to the parent component
   };
-  
+
   const handleSelectAllCreatorClick = (creatorAddress: string) => {
     const tokens = metadata.reduce((acc: TokenMetadata[], token) => {
       const creators =
@@ -150,14 +138,18 @@ export const NftsByOwner = ({ onUpdateSelectedNfts }: NftsByOwnerProps) => {
       return acc;
     }, []);
     const accounts = tokens.map((token) => token.account);
-  
+
     // Check if all NFTs for this creator are already selected
-    const allSelected = accounts.every((account) => selectedNfts.includes(account));
-  
+    const allSelected = accounts.every((account) =>
+      selectedNfts.includes(account)
+    );
+
     let newSelectedNfts;
     if (allSelected) {
       // If all NFTs for this creator are already selected, deselect them
-      newSelectedNfts = selectedNfts.filter((account) => !accounts.includes(account));
+      newSelectedNfts = selectedNfts.filter(
+        (account) => !accounts.includes(account)
+      );
     } else {
       // Otherwise, select all NFTs for this creator
       newSelectedNfts = [...selectedNfts, ...accounts];
@@ -165,13 +157,16 @@ export const NftsByOwner = ({ onUpdateSelectedNfts }: NftsByOwnerProps) => {
     setSelectedNfts(newSelectedNfts);
     onUpdateSelectedNfts(newSelectedNfts); // Pass the updated selectedNfts array to the parent component
   };
-  
 
-  
+  useEffect(() => {
+    if (mintKeys?.length) {
+      const mintValues = mintKeys?.map((mint: PublicKey) => mint.toBase58());
+      setMintArray(mintValues);
+    }
+  }, [mintKeys]);
 
   return (
     <div>
-      
       <div>
         <div>
           <p>{selectedNfts.length}</p>
