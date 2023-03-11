@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   createAssociatedTokenAccountInstruction,
   getAssociatedTokenAddress,
@@ -14,6 +14,7 @@ import {
 } from "@solana/web3.js";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { toast } from "react-toastify";
+import { NftsByOwner } from "../nfts/FindAllByOwner";
 
 const AirdropTest = ({
   recipientAddresses,
@@ -22,10 +23,17 @@ const AirdropTest = ({
 }) => {
   const connection = new Connection("https://api.devnet.solana.com");
   const { publicKey, signTransaction } = useWallet();
-  const mintKeys = [
-    new PublicKey("2gVwm5j1Dy6u88tmJumVpVmdEa9vGzWGCiqThazHCaj6"),
-    new PublicKey("Dbr6ZzHhiG9yA4nQP1oe4qyzbXF8utVDf9veG1WoDCDD"),
-  ];
+  const [mintKeys, setMintKeys] = useState<PublicKey[]>([]);
+  
+  const updateMintKeys = (selectedNfts: string[]) => {
+    const mintKeys = selectedNfts.map((nft) => new PublicKey(nft));
+    setMintKeys(mintKeys);
+  };
+
+  // const mintKeys = [
+  //   new PublicKey("2gVwm5j1Dy6u88tmJumVpVmdEa9vGzWGCiqThazHCaj6"),
+  //   new PublicKey("Dbr6ZzHhiG9yA4nQP1oe4qyzbXF8utVDf9veG1WoDCDD"),
+  // ];
 
   let testMintKey = new PublicKey(
     "tczSo8dpqjmo331gmLsWbGAgCRJZnmK4u6QJ4agzJqU"
@@ -37,7 +45,7 @@ const AirdropTest = ({
   ];
 
   // when not testing return value back to <recipientAddresses> below
-  let holders = testHolders;
+  let holders = recipientAddresses;
 
   const handleAirdrop = async () => {
     if (!publicKey || !signTransaction) {
@@ -126,13 +134,30 @@ const AirdropTest = ({
     }
   }; // end of owners for loop
 
+  
+
   return (
-    <div>
-      <button onClick={handleAirdrop}>Run Airdrop</button>
-      <div>AirdropTest</div>
-      <p>{recipientAddresses.length}</p>
+    <div className="flex flex-col items-center justify-center">
+      <h1 className="text-4xl font-bold my-5">Airdrop NFTs</h1>
+      <button
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        onClick={handleAirdrop}
+      >
+        Run Airdrop
+      </button>
+      <div className="flex flex-row mt-8">
+        <p className="">Recipient Addresses: {recipientAddresses.length}</p>
+        <p className="pl-10">NFTs to Airdrop: {mintKeys.length}</p>
+        <button className="pl-10" onClick={() => console.log(mintKeys)}>
+          Log Mint Keys
+        </button>
+      </div>
+      <div className="w-full">
+        <NftsByOwner onUpdateSelectedNfts={updateMintKeys} />
+      </div>
     </div>
   );
+  
 };
 
 export default AirdropTest;

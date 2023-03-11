@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import AirdropTest from "../airdrop/AirdropTest";
+import { NftsByOwner } from "../nfts/FindAllByOwner";
 
 interface Props {
   mintList: string[];
@@ -12,7 +13,11 @@ interface MintListSnapshotProps {
   programAccounts: Array<any>; // replace `any` with the type of your program accounts
 }
 
-const NewFunctionality = ({ mintList, recipientAddresses, updateRecipientAddresses }: Props) => {
+const NewFunctionality = ({
+  mintList,
+  recipientAddresses,
+  updateRecipientAddresses,
+}: Props) => {
   const [programAccounts, setProgramAccounts] = useState<string[]>([]);
   const [uniqueHolders, setUniqueHolders] = useState<string[]>([]);
   const [ownerValues, setOwnerValues] = useState<string>("");
@@ -22,35 +27,41 @@ const NewFunctionality = ({ mintList, recipientAddresses, updateRecipientAddress
 
   useEffect(() => {
     const getProgramAccounts = async () => {
-      const programAccounts = [];
-      for (let mintAddress of mintList) {
-        const params = [
-          "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
-          {
-            encoding: "jsonParsed",
-            filters: [
-              { dataSize: 165 },
-              { memcmp: { offset: 0, bytes: mintAddress } },
-            ],
-          },
-        ];
-        const response = await axios.post(
-          "https://rpc.helius.xyz/?api-key=e6b85a35-8829-4016-ac2f-90755018d1b6",
-          {
-            jsonrpc: "2.0",
-            id: 1,
-            method: "getProgramAccounts",
-            params: params,
+      let programAccounts: string[] = [];
+      for (let i = 0; i < mintList.length; i += 100) {
+        const mintListBatch = mintList.slice(i, i + 100);
+        const batchPromises = mintListBatch.map(async (mintAddress) => {
+          const params = [
+            "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+            {
+              encoding: "jsonParsed",
+              filters: [
+                { dataSize: 165 },
+                { memcmp: { offset: 0, bytes: mintAddress } },
+              ],
+            },
+          ];
+          const response = await axios.post(
+            "https://rpc.helius.xyz/?api-key=e6b85a35-8829-4016-ac2f-90755018d1b6",
+            {
+              jsonrpc: "2.0",
+              id: 1,
+              method: "getProgramAccounts",
+              params: params,
+            }
+          );
+          if (response.data.result.length > 0) {
+            const firstOwner =
+              response.data.result[0].account.data.parsed.info.owner;
+            return firstOwner;
           }
-        );
-        if (response.data.result.length > 0) {
-          const firstOwner =
-            response.data.result[0].account.data.parsed.info.owner;
-          programAccounts.push(firstOwner);
-        }
+        });
+        const batchResults = await Promise.all(batchPromises);
+        programAccounts = programAccounts.concat(batchResults.filter((item) => item !== undefined));
       }
       setProgramAccounts(programAccounts);
     };
+    
 
     if (shouldRunCode && mintList.length > 0) {
       setIsLoading(true);
@@ -78,14 +89,11 @@ const NewFunctionality = ({ mintList, recipientAddresses, updateRecipientAddress
     updateRecipientAddresses(programAccounts);
     console.log("All Holders Data sent: ", programAccounts);
   };
-  
-  
 
   const handleGetUniqueHolders = () => {
     const uniqueHolders = Array.from(new Set(programAccounts));
     updateRecipientAddresses(uniqueHolders);
   };
-  
 
   useEffect(() => {
     if (programAccounts.length > 0) {
@@ -141,7 +149,9 @@ const NewFunctionality = ({ mintList, recipientAddresses, updateRecipientAddress
               </ul>
             </div>
             <div className="p-3 w-1/2 max-h-96 overflow-y-auto bg-gray-600 text-gray-200 rounded-r-xl">
-              <h3 className="font-bold text-md text-gray-200">Unique Holders</h3>
+              <h3 className="font-bold text-md text-gray-200">
+                Unique Holders
+              </h3>
               <ul>
                 {uniqueHolders.map((holder) => (
                   <li key={holder}>{holder}</li>
@@ -154,21 +164,20 @@ const NewFunctionality = ({ mintList, recipientAddresses, updateRecipientAddress
               className="w-full px-4 py-2 font-medium text-gray-200 rounded-md bg-slate-600 hover:bg-slate-500 hover:drop-shadow"
               onClick={handleSendData}
             >
-              Send Data
+              Use Total Holders
             </button>
             <button
               className="w-full px-4 py-2 font-medium text-gray-200 rounded-md bg-slate-600 hover:bg-slate-500 hover:drop-shadow ml-2"
               onClick={handleGetUniqueHolders}
             >
-              Get Unique Holders
+              Use Unique Holders
             </button>
           </div>
         </div>
       ) : null}
-      <AirdropTest recipientAddresses={recipientAddresses} />
+      
     </div>
   );
-  
 };
 
 export default NewFunctionality;

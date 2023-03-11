@@ -20,8 +20,8 @@ const Home: React.FC<Props> = ({ setOwnerAccounts }) => {
   const { connected } = useWallet();
   const [recipientAddresses, setRecipientAddresses] = useState<string[]>([]);
 
-  const updateRecipientAddresses = (addresses: string[]) => {
-    setRecipientAddresses(addresses);
+  const updateRecipientAddresses = (newAddresses: string[]) => {
+    updateRecipientAddresses(newAddresses);
   };
 
   return (
@@ -57,13 +57,6 @@ const Home: React.FC<Props> = ({ setOwnerAccounts }) => {
                 <Tabs>
                   <TabList className="flex mb-8">
                     <Tab
-                      className="flex justify-center bg-gray-800 w-full text-gray-300 py-4 px-4 rounded-l-lg hover:text-gray-200 hover:bg-gray-700 focus:text-gray-200 focus:bg-gray-700"
-                      selectedClassName="bg-gray-900 text-gray-200 font-semibold"
-                    >
-                      Holder Snapshot
-                      <div className="w-3 h-3 rounded-full my-auto ml-2 animate-pulse bg-green-400 hidden md:block"></div>
-                    </Tab>
-                    <Tab
                       className="flex justify-center bg-gray-800 w-full text-gray-300 py-4 px-4 hover:text-gray-200 hover:bg-gray-700 focus:text-gray-200 focus:bg-gray-700 "
                       selectedClassName="bg-gray-900 text-gray-200 font-semibold"
                     >
@@ -79,21 +72,6 @@ const Home: React.FC<Props> = ({ setOwnerAccounts }) => {
                       <div className="w-3 h-3 rounded-full my-auto ml-2 bg-red-500 hidden md:block"></div>
                     </Tab>
                   </TabList>
-
-                  <TabPanel>
-                    <div className="flex flex-col items-center justify-center mx-auto">
-                      <p className="text-gray-300 w-4/5 text-base">
-                        Use HelloMoon's advanced data systems to generate a
-                        current Holder.
-                      </p>
-                      <HoldersList
-                        setOwnerAccounts={setOwnerAccounts}
-                        updateRecipientAddresses={updateRecipientAddresses}
-                      />
-                      <AirdropTest recipientAddresses={recipientAddresses} />
-                      {/* <AirdropNFT recipientAddresses={recipientAddresses} /> */}
-                    </div>
-                  </TabPanel>
 
                   <TabPanel>
                     <div className="mx-auto w-full">

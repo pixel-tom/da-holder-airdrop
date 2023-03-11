@@ -16,7 +16,7 @@ const CreatorInput = ({ handleButtonClick, isLoading }: CreatorInputProps) => {
 
   return (
     <div className="flex flex-col mb-4 text-gray-200">
-      <h1 className="font-bold text-lg mb-5">Step 1: Collection Mint List</h1>
+      
       <label htmlFor="creator" className="font-medium mb-2">
         Enter CandyMachine ID/First Creator Address:
       </label>

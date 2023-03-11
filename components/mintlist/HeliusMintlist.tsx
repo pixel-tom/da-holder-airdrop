@@ -6,6 +6,7 @@ import CreatorInput from "./CreatorInput";
 import MintList from "./MintList";
 import DownloadMintlist from "./DownloadMintlist";
 import AirdropTest from "../airdrop/AirdropTest";
+import { NftsByOwner } from "../nfts/FindAllByOwner";
 
 const HeliusMintlist = () => {
   const [response, setResponse] = useState<MintlistResponse | undefined>(
@@ -118,9 +119,6 @@ const HeliusMintlist = () => {
                   </div>
                 </button>
               </div>
-              <div className="mt-8">
-                <AirdropTest recipientAddresses={recipientAddresses} />
-              </div>
             </>
           )}
         </>
@@ -139,11 +137,12 @@ const HeliusMintlist = () => {
               <p>Previous</p>
             </button>
           </div>
+          <AirdropTest recipientAddresses={recipientAddresses} />
+          
         </>
       )}
     </div>
   );
-  
 };
 
 export default HeliusMintlist;

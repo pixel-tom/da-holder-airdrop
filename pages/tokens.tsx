@@ -26,7 +26,7 @@ const tokens = () => {
         <AirdropTest recipientAddresses={[]} />
       </div>
       <div>
-        <NftsByOwner />
+        
         <HeliusMintlist />
       </div>
     </div>
