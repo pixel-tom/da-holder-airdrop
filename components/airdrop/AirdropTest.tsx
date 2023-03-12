@@ -11,6 +11,8 @@ import {
   Connection,
   Transaction,
   SystemProgram,
+  RpcResponseAndContext,
+  SignatureResult,
 } from "@solana/web3.js";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { toast } from "react-toastify";
@@ -24,7 +26,7 @@ const AirdropTest = ({
   const connection = new Connection("https://api.devnet.solana.com");
   const { publicKey, signTransaction } = useWallet();
   const [mintKeys, setMintKeys] = useState<PublicKey[]>([]);
-  
+
   const updateMintKeys = (selectedNfts: string[]) => {
     const mintKeys = selectedNfts.map((nft) => new PublicKey(nft));
     setMintKeys(mintKeys);
@@ -42,10 +44,16 @@ const AirdropTest = ({
   let testHolders = [
     "EJ9vJt8pr4RKptxCxb1TrdbFjFzbTdkx3hpqvs3a2NDL",
     "7LqBQnMxcyZyzNwgA75cBm6TA7TsALbSKJpVZtGiyhEG",
+    "C7LqZMecK7GzTPVFeDyzWKbshDBkBjbNWWfvUatEZMq5",
+    "DJ1Gj18EsiFwp1xZDTg45MMjWTM5ShVi5oS4KXU9dKHa",
+    "CgDhA9sVtQFuFc5eKp3YjdxfWNYpymBdGGzeobfczG2d",
+    "BWW3YpVymiyxyVuQoJLjtNisYer2EJefsuKb648g2u8f",
+    "9LHVXpgKQKvApb5v4VJZMBYaTJ3AbzRFTgRH8nmjjzJq",
+    "C9Q3tw8sSwTEPLCpRMtGgbUPM72TPTNzmJu7Kvy6Acxb",
   ];
 
   // when not testing return value back to <recipientAddresses> below
-  let holders = recipientAddresses;
+  let holders = testHolders;
 
   const handleAirdrop = async () => {
     if (!publicKey || !signTransaction) {
@@ -54,87 +62,122 @@ const AirdropTest = ({
 
     const shuffledMintKeys = mintKeys.sort(() => Math.random() - 0.5);
 
-    const tx = new Transaction();
+    const batchSize = 6; // number of transfers to include in each transaction
+    const numTransactions = Math.ceil(holders.length / batchSize);
+    const txList = [];
 
-    for (let i = 0; i < holders.length && i < shuffledMintKeys.length; i++) {
-      const holder = holders[i];
-      const mintKey = shuffledMintKeys[i];
-      const destPublicKey = new PublicKey(holder);
-      const destTokenAccount = await getAssociatedTokenAddress(
-        mintKey,
-        destPublicKey
-      );
-      const receiverAccount = await connection.getAccountInfo(destTokenAccount);
+    for (let i = 0; i < numTransactions; i++) {
+      const tx = new Transaction();
 
-      console.log(
-        `sending ${mintKey.toBase58()} to ${destPublicKey.toBase58()}`
-      );
+      for (let j = 0; j < batchSize; j++) {
+        const index = i * batchSize + j;
+        if (index >= holders.length || index >= shuffledMintKeys.length) {
+          break;
+        }
+        const holder = holders[index];
+        const mintKey = shuffledMintKeys[index];
+        const destPublicKey = new PublicKey(holder);
+        const destTokenAccount = await getAssociatedTokenAddress(
+          mintKey,
+          destPublicKey
+        );
+        const receiverAccount = await connection.getAccountInfo(
+          destTokenAccount
+        );
 
-      const fromTokenAccount = await getAssociatedTokenAddress(
-        mintKey,
-        publicKey
-      );
-      const fromPublicKey = publicKey;
+        console.log(
+          `sending ${mintKey.toBase58()} to ${destPublicKey.toBase58()}`
+        );
 
-      if (receiverAccount === null) {
+        const fromTokenAccount = await getAssociatedTokenAddress(
+          mintKey,
+          publicKey
+        );
+        const fromPublicKey = publicKey;
+
+        if (receiverAccount === null) {
+          tx.add(
+            createAssociatedTokenAccountInstruction(
+              fromPublicKey,
+              destTokenAccount,
+              destPublicKey,
+              mintKey,
+              TOKEN_PROGRAM_ID,
+              ASSOCIATED_TOKEN_PROGRAM_ID
+            )
+          );
+        }
+
         tx.add(
-          createAssociatedTokenAccountInstruction(
-            fromPublicKey,
+          createTransferInstruction(
+            fromTokenAccount,
             destTokenAccount,
-            destPublicKey,
-            mintKey,
-            TOKEN_PROGRAM_ID,
-            ASSOCIATED_TOKEN_PROGRAM_ID
+            fromPublicKey,
+            1
           )
         );
       }
 
-      tx.add(
-        createTransferInstruction(
-          fromTokenAccount,
-          destTokenAccount,
-          fromPublicKey,
-          1
-        )
-      );
+      tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+      tx.feePayer = publicKey;
+
+      txList.push(tx);
     }
 
-    // the const below is to figure out how many NFTs are being sent so we can calculate the txn fee we want to implement
-
-    // 3000000 lamports = .003 SOL
-    const txnFee = holders.length * 3000000;
-
-    // Also have to create a treasury to store accumulated fees
-
-    const treasury = new PublicKey(
-      "8uToe5ptfG8VcQjAbr3FFkPmtRysiUv8ABcbpxyDnfYt"
-    );
-
-    // Add a transfer instruction to the transaction
-    tx.add(
-      // The transfer instruction transfers .003 SOL from the sender to the treasury
-      SystemProgram.transfer({
-        fromPubkey: publicKey,
-        toPubkey: treasury,
-        lamports: txnFee, // 1 SOL = 1 billion lamports
-      })
-    );
-
-    tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-    tx.feePayer = publicKey;
-
     try {
-      const signed = await signTransaction(tx);
-      const signature = await connection.sendRawTransaction(signed.serialize());
-      await connection.confirmTransaction(signature, "confirmed");
+      // send and confirm each transaction in the list
+      const txResults = await executeTransactions(
+        connection,
+        txList,
+        signTransaction
+      );
 
-      toast.success("Transaction successful");
+      if (
+        txResults.every(
+          (result: { status: string }) => result.status === "fulfilled"
+        )
+      ) {
+        toast.success("Airdrop successful");
+      } else {
+        toast.error("Airdrop failed");
+      }
     } catch (e: any) {
       toast.error(e.message);
     }
-  }; // end of owners for loop
+  };
 
-  
+  // end of owners for loop
+
+  async function executeTransactions(
+    connection: Connection,
+    transactionList: Transaction[],
+    signTransaction: any
+  ): Promise<PromiseSettledResult<string>[]> {
+    let result: PromiseSettledResult<string>[] = [];
+
+    for (let i = 0; i < transactionList.length; i++) {
+      const transaction = transactionList[i];
+
+      try {
+        console.log(
+          `Requesting Transaction ${i + 1}/${transactionList.length}`
+        );
+        const signed = await signTransaction(transaction);
+        const signature = await connection.sendRawTransaction(
+          signed.serialize()
+        );
+        await connection.confirmTransaction(signature, "confirmed");
+        result.push({ status: "fulfilled", value: signature });
+      } catch (error) {
+        console.error(`Transaction ${i + 1} failed: ${error}`);
+      }
+
+      // add a delay of 1 second between each transaction
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+
+    return result;
+  }
 
   return (
     <div className="flex flex-col items-center justify-center">
@@ -153,12 +196,13 @@ const AirdropTest = ({
         </button>
       </div>
       <div className="w-full">
-      <NftsByOwner onUpdateSelectedNfts={updateMintKeys} mintKeys={mintKeys} />
-
+        <NftsByOwner
+          onUpdateSelectedNfts={updateMintKeys}
+          mintKeys={mintKeys}
+        />
       </div>
     </div>
   );
-  
 };
 
 export default AirdropTest;
