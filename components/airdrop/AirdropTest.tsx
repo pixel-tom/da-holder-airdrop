@@ -13,6 +13,7 @@ import {
   SystemProgram,
   RpcResponseAndContext,
   SignatureResult,
+  LAMPORTS_PER_SOL,
 } from "@solana/web3.js";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { toast } from "react-toastify";
@@ -54,6 +55,16 @@ const AirdropTest = ({
 
   // when not testing return value back to <recipientAddresses> below
   let holders = testHolders;
+
+  // treasury is where you want your airdrop fee to go
+
+  const treasury = new PublicKey(
+    "8uToe5ptfG8VcQjAbr3FFkPmtRysiUv8ABcbpxyDnfYt"
+  );
+
+  // fee you want to charge to use the tool
+
+  const txnFee = holders.length * 3000000;
 
   const handleAirdrop = async () => {
     if (!publicKey || !signTransaction) {
@@ -117,6 +128,14 @@ const AirdropTest = ({
           )
         );
       }
+
+      tx.add(
+        SystemProgram.transfer({
+          fromPubkey: publicKey,
+          toPubkey: treasury,
+          lamports: txnFee,
+        })
+      );
 
       tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
       tx.feePayer = publicKey;
