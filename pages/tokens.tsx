@@ -24,8 +24,8 @@ const tokens = () => {
       </div>
       <div>
         <FetchTokens />
-        <AirdropTest recipientAddresses={[]} />
-        {/* <AirdropSolTest /> */}
+        {/* <AirdropTest recipientAddresses={[]} /> */}
+        <AirdropSolTest />
       </div>
       <div>
         <HeliusMintlist />

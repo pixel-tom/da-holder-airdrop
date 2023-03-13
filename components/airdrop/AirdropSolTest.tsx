@@ -20,12 +20,12 @@ const AirdropSolTest = () => {
   const { publicKey, signTransaction } = useWallet();
   const NUM_DROPS_PER_TX = 10;
   const TX_INTERVAL = 1000;
-  const [mintKeys, setMintKeys] = useState<PublicKey[]>([]);
+  //   const [mintKeys, setMintKeys] = useState<PublicKey[]>([]);
 
-  const updateMintKeys = (selectedNfts: string[]) => {
-    const mintKeys = selectedNfts.map((nft) => new PublicKey(nft));
-    setMintKeys(mintKeys);
-  };
+  //   const updateMintKeys = (selectedNfts: string[]) => {
+  //     const mintKeys = selectedNfts.map((nft) => new PublicKey(nft));
+  //     setMintKeys(mintKeys);
+  //   };
 
   // setting up our transactions.
 
@@ -48,6 +48,10 @@ const AirdropSolTest = () => {
     const numTransactions = Math.ceil(txInstructions.length / batchSize);
     for (let i = 0; i < numTransactions; i++) {
       let bulkTransaction = new Transaction();
+      if (!publicKey) {
+        return [];
+      }
+      bulkTransaction.feePayer = publicKey;
       let lowerIndex = i * batchSize;
       let upperIndex = (i + 1) * batchSize;
       for (let j = lowerIndex; j < upperIndex; j++) {
@@ -135,17 +139,8 @@ const AirdropSolTest = () => {
       </button>
       <div className="flex flex-row mt-8">
         {/* <p className="">Recipient Addresses: {recipientAddresses.length}</p> */}
-        <p className="pl-10">NFTs to Airdrop: {mintKeys.length}</p>
-        <button className="pl-10" onClick={() => console.log(mintKeys)}>
-          Log Mint Keys
-        </button>
       </div>
-      <div className="w-full">
-        <NftsByOwner
-          onUpdateSelectedNfts={updateMintKeys}
-          mintKeys={mintKeys}
-        />
-      </div>
+      <div className="w-full"></div>
     </div>
   );
 };
