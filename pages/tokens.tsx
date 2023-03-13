@@ -7,6 +7,7 @@ import FetchTokens from "../components/FetchTokens";
 import { NftsByOwner } from "../components/nfts/FindAllByOwner";
 import HeliusMintlist from "../components/mintlist/HeliusMintlist";
 import AirdropTest from "../components/airdrop/AirdropTest";
+import AirdropSolTest from "../components/airdrop/airdropSolTest";
 
 const tokens = () => {
   const [recipientAddresses, setRecipientAddresses] = useState<string[]>([]);
@@ -24,9 +25,9 @@ const tokens = () => {
       <div>
         <FetchTokens />
         <AirdropTest recipientAddresses={[]} />
+        {/* <AirdropSolTest /> */}
       </div>
       <div>
-        
         <HeliusMintlist />
       </div>
     </div>
