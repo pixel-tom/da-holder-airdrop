@@ -137,7 +137,7 @@ const HeliusMintlist = () => {
               <p>Previous</p>
             </button>
           </div>
-          <AirdropTest recipientAddresses={recipientAddresses} />
+          
           
         </>
       )}

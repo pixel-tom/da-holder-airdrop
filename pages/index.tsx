@@ -34,9 +34,7 @@ const Home: React.FC<Props> = ({ setOwnerAccounts }) => {
         <div>
           <h1 className="text-gray-600 font-bold text-xl">da-holder-airdrop</h1>
         </div>
-        <h1 className="text-gray-600">
-          <Link href="/tokens">Tokens</Link>
-        </h1>
+        
         <div>
           <WalletMultiButton />
         </div>

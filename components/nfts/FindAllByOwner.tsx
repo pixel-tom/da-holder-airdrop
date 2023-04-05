@@ -210,7 +210,7 @@ export const NftsByOwner = ({ onUpdateSelectedNfts }: NftsByOwnerProps) => {
               <div className="grid grid-cols-4 gap-4">
                 {tokens.map((token: TokenMetadata, index: number) => {
                   const offChainMetadata = token.offChainMetadata?.metadata;
-                  const image = offChainMetadata?.image;
+                 const image = offChainMetadata?.image; 
                   const name = offChainMetadata?.name;
                   const account = token.account;
                   const isSelected = selectedNfts.includes(account);

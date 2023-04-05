@@ -14,6 +14,8 @@ import {
   RpcResponseAndContext,
   SignatureResult,
   LAMPORTS_PER_SOL,
+  Keypair,
+  sendAndConfirmTransaction,
 } from "@solana/web3.js";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { toast } from "react-toastify";
@@ -24,9 +26,11 @@ const AirdropTest = ({
 }: {
   recipientAddresses: string[];
 }) => {
+  const [recipientAddressesInput, setRecipientAddressesInput] = useState("");
   const connection = new Connection("https://api.devnet.solana.com");
   const { publicKey, signTransaction } = useWallet();
   const [mintKeys, setMintKeys] = useState<PublicKey[]>([]);
+  const [, setRecipientAddresses] = useState<string[]>([]);
 
   const updateMintKeys = (selectedNfts: string[]) => {
     const mintKeys = selectedNfts.map((nft) => new PublicKey(nft));
@@ -70,16 +74,16 @@ const AirdropTest = ({
     if (!publicKey || !signTransaction) {
       return;
     }
-
+  
     const shuffledMintKeys = mintKeys.sort(() => Math.random() - 0.5);
-
+  
     const batchSize = 6; // number of transfers to include in each transaction
     const numTransactions = Math.ceil(holders.length / batchSize);
     const txList = [];
-
+  
     for (let i = 0; i < numTransactions; i++) {
       const tx = new Transaction();
-
+  
       for (let j = 0; j < batchSize; j++) {
         const index = i * batchSize + j;
         if (index >= holders.length || index >= shuffledMintKeys.length) {
@@ -95,17 +99,17 @@ const AirdropTest = ({
         const receiverAccount = await connection.getAccountInfo(
           destTokenAccount
         );
-
+  
         console.log(
           `sending ${mintKey.toBase58()} to ${destPublicKey.toBase58()}`
         );
-
+  
         const fromTokenAccount = await getAssociatedTokenAddress(
           mintKey,
           publicKey
         );
         const fromPublicKey = publicKey;
-
+  
         if (receiverAccount === null) {
           tx.add(
             createAssociatedTokenAccountInstruction(
@@ -118,7 +122,7 @@ const AirdropTest = ({
             )
           );
         }
-
+  
         tx.add(
           createTransferInstruction(
             fromTokenAccount,
@@ -128,7 +132,7 @@ const AirdropTest = ({
           )
         );
       }
-
+  
       tx.add(
         SystemProgram.transfer({
           fromPubkey: publicKey,
@@ -136,77 +140,91 @@ const AirdropTest = ({
           lamports: txnFee,
         })
       );
-
+  
       tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
       tx.feePayer = publicKey;
-
-      txList.push(tx);
-    }
-
-    try {
-      // send and confirm each transaction in the list
-      const txResults = await executeTransactions(
-        connection,
-        txList,
-        signTransaction
-      );
-
-      if (
-        txResults.every(
-          (result: { status: string }) => result.status === "fulfilled"
-        )
-      ) {
-        toast.success("Airdrop successful");
-      } else {
-        toast.error("Airdrop failed");
+  
+      try {
+        // sign the transaction with the user's wallet
+        const signed = await signTransaction(tx);
+  
+        // send the signed transaction
+        const signature = await connection.sendRawTransaction(signed.serialize());
+  
+        // confirm the transaction
+        await connection.confirmTransaction(signature, "confirmed");
+  
+        txList.push({ status: "fulfilled", value: signature });
+      } catch (error) {
+        console.error(`Transaction failed: ${error}`);
+        
       }
-    } catch (e: any) {
-      toast.error(e.message);
+  
+      // add a delay of 1 second between each transaction
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+  
+    if (txList.every((result) => result.status === "fulfilled")) {
+      toast.success("Airdrop successful");
+    } else {
+      toast.error("Airdrop failed");
     }
   };
+  
 
   // end of owners for loop
 
   async function executeTransactions(
-    connection: Connection,
+    solanaConnection: Connection,
     transactionList: Transaction[],
-    signTransaction: any
+    payer: Keypair
   ): Promise<PromiseSettledResult<string>[]> {
     let result: PromiseSettledResult<string>[] = [];
-
-    for (let i = 0; i < transactionList.length; i++) {
-      const transaction = transactionList[i];
-
-      try {
-        console.log(
-          `Requesting Transaction ${i + 1}/${transactionList.length}`
-        );
-        const signed = await signTransaction(transaction);
-        const signature = await connection.sendRawTransaction(
-          signed.serialize()
-        );
-        await connection.confirmTransaction(signature, "confirmed");
-        result.push({ status: "fulfilled", value: signature });
-      } catch (error) {
-        console.error(`Transaction ${i + 1} failed: ${error}`);
+    let staggeredTransactions: Promise<string>[] = transactionList.map(
+      (transaction, i, allTx) => {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            console.log(`Requesting Transaction ${i + 1}/${allTx.length}`);
+            solanaConnection
+              .getLatestBlockhash()
+              .then((recentHash) => (transaction.recentBlockhash = recentHash.blockhash))
+              .then(() => sendAndConfirmTransaction(solanaConnection, transaction, [payer]))
+              .then(resolve);
+          }, i );
+        });
       }
-
-      // add a delay of 1 second between each transaction
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    }
-
+    );
+    result = await Promise.allSettled(staggeredTransactions);
     return result;
   }
+
+  const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formattedAddresses = recipientAddressesInput.split(", ");
+    setRecipientAddresses(formattedAddresses);
+  };
+
+  const handleRecipientAddressesInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRecipientAddressesInput(event.target.value);
+  };
+  
 
   return (
     <div className="flex flex-col items-center justify-center">
       <h1 className="text-4xl font-bold my-5">Airdrop NFTs</h1>
-      <button
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        onClick={handleAirdrop}
-      >
-        Run Airdrop
-      </button>
+      <form onSubmit={handleFormSubmit}>
+        <label htmlFor="recipientAddresses">Recipient Addresses:</label>
+        <input
+          type="text"
+          id="recipientAddresses"
+          name="recipientAddresses"
+          value={recipientAddressesInput}
+          onChange={handleRecipientAddressesInputChange}
+        />
+        <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Run Airdrop
+        </button>
+      </form>
       <div className="flex flex-row mt-8">
         <p className="">Recipient Addresses: {recipientAddresses.length}</p>
         <p className="pl-10">NFTs to Airdrop: {mintKeys.length}</p>
@@ -222,6 +240,7 @@ const AirdropTest = ({
       </div>
     </div>
   );
+  
 };
 
 export default AirdropTest;

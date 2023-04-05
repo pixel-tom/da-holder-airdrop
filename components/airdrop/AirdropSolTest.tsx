@@ -48,10 +48,6 @@ const AirdropSolTest = () => {
     const numTransactions = Math.ceil(txInstructions.length / batchSize);
     for (let i = 0; i < numTransactions; i++) {
       let bulkTransaction = new Transaction();
-      if (!publicKey) {
-        return [];
-      }
-      bulkTransaction.feePayer = publicKey;
       let lowerIndex = i * batchSize;
       let upperIndex = (i + 1) * batchSize;
       for (let j = lowerIndex; j < upperIndex; j++) {

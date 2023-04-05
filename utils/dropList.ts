@@ -35,6 +35,54 @@ export const dropList: Drop[] = [
     walletAddress: "C9Q3tw8sSwTEPLCpRMtGgbUPM72TPTNzmJu7Kvy6Acxb",
     numLamports: 1000000000,
   },
+  {
+    walletAddress: "DwhkSSa3tT6XzQPuqPHfU3tRCmoAGy9UDgeEQXGC7ewE",
+    numLamports: 1000000000,
+  },
+  {
+    walletAddress: "FB6xUEeDsetqhxKQHyJwsAiv3XFf7Tfg38ivPyn9S492",
+    numLamports: 1000000000,
+  },
+  {
+    walletAddress: "HkTFX8Vk22ZcMN2G5MK5g4jbnLVZ41f77qTYXtcjYG3X",
+    numLamports: 1000000000,
+  },
+  {
+    walletAddress: "CGEbdsrvjtvQMetpc4e2nmRkAsY54Smuz43HqwywF92",
+    numLamports: 1000000000,
+  },
+  {
+    walletAddress: "9qiJn7THbogLomcyVydhsTEXfTdq9R1aCiPh6w6aexTz",
+    numLamports: 1000000000,
+  },
+  {
+    walletAddress: "4ig5JBvofFaYEggYsfRvTSmxJxUt4mAdhdZc6bkrLeb3",
+    numLamports: 1000000000,
+  },
+  {
+    walletAddress: "9np4yxnohjACyoSUXg27SK8wzhLe7J91CCzy1ELuAKgn",
+    numLamports: 1000000000,
+  },
+  {
+    walletAddress: "2Ehj3QeeA1EuvCx9jJA24QK6oXpfhVM4dPcCXTgWTQKW",
+    numLamports: 1000000000,
+  },
+  {
+    walletAddress: "7Y7NvSDbAeEcXmXejisbrWrsArcNe8ajTdmcfnwLGm5z",
+    numLamports: 1000000000,
+  },
+  {
+    walletAddress: "DcQYkqB3uxaymtQRwSLP3pVgTyPLNMqzxhpRASMJSDiZ",
+    numLamports: 1000000000,
+  },
+  {
+    walletAddress: "bWmTW9RLKzXRfPdUuYBnUGKyPQjMwK3gbpbfWQnABtt",
+    numLamports: 1000000000,
+  },
+  {
+    walletAddress: "VmPfRHR5DPJiXTwyHe8xcKZy43cPV5yxxr3Jq7iev5Z",
+    numLamports: 1000000000,
+  }
 ];
 
 export interface DropNft {
